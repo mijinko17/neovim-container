@@ -65,12 +65,12 @@ return require('packer').startup(function(use)
     'williamboman/mason-lspconfig.nvim',
     config = function()
       require('mason-lspconfig').setup({
-        ensure_installed = { 'sumneko_lua' }
+        ensure_installed = {}
       })
       require('mason-lspconfig').setup_handlers({ function(server)
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
-        if server == 'sumneko_lua' then
-          require('lspconfig')['sumneko_lua'].setup {
+        if server == 'lua_ls' then
+          require('lspconfig')['lua_ls'].setup {
             capabilities = capabilities,
             settings = {
               Lua = {

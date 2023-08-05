@@ -1,11 +1,10 @@
-# FROM debian:bookworm
 FROM curlimages/curl:8.2.1 as curl
 WORKDIR /download
 RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
 
 FROM debian:bookworm
-# RUN apt-get update
-# RUN apt-get install fuse -y
+RUN apt-get update
+RUN apt-get install git -y
 WORKDIR /neovim
 COPY --from=curl /download/nvim.appimage .
 RUN chmod u+x nvim.appimage
