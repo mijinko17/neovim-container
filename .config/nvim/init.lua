@@ -1,1 +1,3 @@
-vim.opt.number = true
+require('core')
+-- require('plugin')
+-- require('keymap')
