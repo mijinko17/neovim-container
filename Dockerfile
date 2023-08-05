@@ -11,3 +11,4 @@ COPY --from=curl /download/nvim.appimage .
 RUN chmod u+x nvim.appimage
 RUN ./nvim.appimage --appimage-extract
 RUN ln -s /neovim/squashfs-root/AppRun /usr/bin/nvim
+COPY .config/ /root/.config
