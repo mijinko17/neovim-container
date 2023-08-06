@@ -5,6 +5,8 @@ RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appi
 FROM debian:bookworm
 RUN apt-get update
 RUN apt-get install git -y
+RUN apt-get install curl -y
+RUN apt-get install ripgrep -y
 WORKDIR /neovim
 COPY --from=curl /download/nvim.appimage .
 RUN chmod u+x nvim.appimage

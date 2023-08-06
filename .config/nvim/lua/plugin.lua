@@ -31,8 +31,15 @@ return require('packer').startup(function(use)
     requires = { { 'nvim-lua/plenary.nvim' }, { 'BurntSushi/ripgrep' } },
     config = function()
       local builtin = require('telescope.builtin')
-      vim.keymap.set('n', '<leader>p', builtin.find_files, {})
+      vim.keymap.set('n', '<leader>p', function() builtin.find_files({ hidden=true }) end, {})
       vim.keymap.set('n', '<leader>f', builtin.live_grep, {})
+      require('telescope').setup{ 
+        defaults = { 
+          file_ignore_patterns = { 
+            ".git" 
+          }
+        }
+      }
     end
   }
   use {
@@ -65,7 +72,7 @@ return require('packer').startup(function(use)
     'williamboman/mason-lspconfig.nvim',
     config = function()
       require('mason-lspconfig').setup({
-        ensure_installed = {}
+        ensure_installed = { 'lua_ls' }
       })
       require('mason-lspconfig').setup_handlers({ function(server)
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
