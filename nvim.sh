@@ -11,9 +11,10 @@ if [[ $absolute_path =~ $regex ]]; then
     docker run \
       --rm \
       --name neovim-container \
-      -it \
-      -v $HOME:/home/host \
-      -w $absolute_current_dir_in_container \
+      --interactive \
+      --tty \
+      --volume $HOME:/home/host \
+      --workdir $absolute_current_dir_in_container \
       --network=host mijinko17/neovim-container:latest \
       nvim $neovim_target
   fi
