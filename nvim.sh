@@ -13,22 +13,15 @@ function relative_path_from_home_directory() {
   fi
 }
 
-if ! hoge=$(relative_path_from_home_directory $neovim_target_absolute_path_in_host); then
+if ! neovim_target_relative_path=$(relative_path_from_home_directory $neovim_target_absolute_path_in_host); then
   echo $?
 fi
-echo $hoge
+neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
 
-if neovim_target_relative_path=$(relative_path_from_home_directory $neovim_target_absolute_path_in_host); then
-  neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
-else
+if ! current_directory_relative_path=$(relative_path_from_home_directory $current_directory_absolute_path_in_host); then
   echo $?
 fi
-
-if current_directory_relative_path=$(relative_path_from_home_directory $current_directory_absolute_path_in_host); then
-  current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
-else
-  echo $?
-fi
+current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
 
 docker run \
   --rm \
