@@ -1,21 +1,41 @@
 #!/usr/bin/env bash
 
-readonly absolute_path=$(readlink -f $1)
-readonly absolute_current_dir=$(pwd)
-readonly regex="${HOME}/(.+)"
+readonly neovim_target_absolute_path_in_host=$(readlink -f $1)
+readonly current_directory_absolute_path_in_host=$(pwd)
 
-if [[ $absolute_path =~ $regex ]]; then
-  readonly neovim_target="/home/host/${BASH_REMATCH[1]}"
-  if [[ $absolute_current_dir =~ $regex ]]; then
-    readonly absolute_current_dir_in_container="/home/host/${BASH_REMATCH[1]}"
-    docker run \
-      --rm \
-      --name neovim-container \
-      --interactive \
-      --tty \
-      --volume $HOME:/home/host \
-      --workdir $absolute_current_dir_in_container \
-      --network=host mijinko17/neovim-container:latest \
-      nvim $neovim_target
+function relative_path_from_home_directory() {
+  readonly regex="${HOME}/(.+)"
+  if [[ $1 =~ $regex ]]; then
+   echo ${BASH_REMATCH[1]}
+   return 0
+  else
+    return 1
   fi
+}
+
+if ! hoge=$(relative_path_from_home_directory $neovim_target_absolute_path_in_host); then
+  echo $?
 fi
+echo $hoge
+
+if neovim_target_relative_path=$(relative_path_from_home_directory $neovim_target_absolute_path_in_host); then
+  neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
+else
+  echo $?
+fi
+
+if current_directory_relative_path=$(relative_path_from_home_directory $current_directory_absolute_path_in_host); then
+  current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
+else
+  echo $?
+fi
+
+docker run \
+  --rm \
+  --name neovim-container \
+  --interactive \
+  --tty \
+  --volume $HOME:/home/host \
+  --workdir $current_directory_absolute_path_in_containier \
+  --network=host \
+  mijinko17/neovim-container:latest nvim $neovim_target_absolute_path_in_container
