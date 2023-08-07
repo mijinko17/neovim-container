@@ -33,10 +33,10 @@ return require('packer').startup(function(use)
       local builtin = require('telescope.builtin')
       vim.keymap.set('n', '<leader>p', function() builtin.find_files({ hidden=true }) end, {})
       vim.keymap.set('n', '<leader>f', builtin.live_grep, {})
-      require('telescope').setup{ 
-        defaults = { 
-          file_ignore_patterns = { 
-            ".git" 
+      require('telescope').setup{
+        defaults = {
+          file_ignore_patterns = {
+            ".git"
           }
         }
       }
