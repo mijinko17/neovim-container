@@ -3,7 +3,7 @@
 readonly current_directory=$(pwd)
 
 cd `dirname $0`
-nvim_sh_path=$(readlink -f ../nvim.sh)
+nvim_sh_path=$(readlink -f ./run.sh)
 ./build.sh
 
 cd $current_directory

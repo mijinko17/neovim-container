@@ -2,4 +2,4 @@
 
 cd `dirname $0`
 
-docker build -t mijinko17/neovim-container:latest --network host ..
+docker build -t mijinko17/neovim-container:develop --network host ..
