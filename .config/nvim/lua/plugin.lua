@@ -11,89 +11,25 @@ end
 
 local packer_bootstrap = ensure_packer()
 
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = '*',
-  callback = function(args)
-    if args.match == 'lua' then
-      vim.bo.expandtab   = true
-      vim.bo.shiftwidth  = 2
-      vim.bo.softtabstop = 2
-      vim.bo.tabstop     = 2
-    end
-  end
-})
-
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
-  use 'neovim/nvim-lspconfig'
   use {
-    'nvim-telescope/telescope.nvim',
-    requires = { { 'nvim-lua/plenary.nvim' }, { 'BurntSushi/ripgrep' } },
-    config = function()
-      local builtin = require('telescope.builtin')
-      vim.keymap.set('n', '<leader>p', function() builtin.find_files({ hidden=true }) end, {})
-      vim.keymap.set('n', '<leader>f', builtin.live_grep, {})
-      require('telescope').setup{
-        defaults = {
-          file_ignore_patterns = {
-            ".git"
-          }
-        }
-      }
+    "williamboman/mason.nvim",
+    config=function()
+	    require("mason").setup()
     end
   }
   use {
-    'kristijanhusak/vim-hybrid-material',
-    config = function()
-      vim.cmd 'colorscheme hybrid_material'
-    end,
-  }
-  use {
-    'hrsh7th/nvim-cmp',
-    requires = {
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-nvim-lsp',
-    },
-    config = function()
-      vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        callback = function() vim.lsp.buf.formatting_sync() end
-      })
-      require 'cmp'.setup { sources = { { name = 'path' }, { name = 'nvim_lsp' } } }
+    "williamboman/mason-lspconfig.nvim",
+    config=function()
+	    require("mason-registry").refresh()
+	    require("mason-lspconfig").setup{
+		    ensure_installed = { "lua_ls" },
+	    }
     end
   }
   use {
-    'williamboman/mason.nvim',
-    config = function()
-      require('mason').setup()
-    end
-  }
-  use {
-    'williamboman/mason-lspconfig.nvim',
-    config = function()
-      require('mason-lspconfig').setup({
-        ensure_installed = { 'lua_ls' }
-      })
-      require('mason-lspconfig').setup_handlers({ function(server)
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
-        if server == 'lua_ls' then
-          require('lspconfig')['lua_ls'].setup {
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { 'vim' },
-                },
-              },
-            },
-          }
-        else
-          require('lspconfig')[server].setup {
-            capabilities = capabilities,
-          }
-        end
-      end })
-    end
+    "neovim/nvim-lspconfig",
   }
   if packer_bootstrap then
     require('packer').sync()
