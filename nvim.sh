@@ -3,6 +3,7 @@
 readonly neovim_target_absolute_path_in_host=$(readlink -f $1)
 readonly current_directory_absolute_path_in_host=$(pwd)
 readonly container_name=neovim-container
+readonly container_name_regex=/neovim-container$
 
 function relative_path_from_home_directory() {
   readonly regex="${HOME}/(.+)"
@@ -26,7 +27,7 @@ if ! readonly neovim_target_relative_path=$(relative_path_from_home_directory $n
 fi
 readonly neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
 
-if [ "$(docker ps -aq -f name="$container_name")" ]; then
+if [ "$(docker ps -aq -f name="$container_name_regex")" ]; then
     docker start $container_name &> /dev/null
     docker exec \
     --interactive \
