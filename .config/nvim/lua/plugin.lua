@@ -9,27 +9,51 @@ local ensure_packer = function()
   return false
 end
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = '*',
+  callback = function(args)
+    if args.match == 'lua' then
+      vim.bo.expandtab   = true
+      vim.bo.shiftwidth  = 2
+      vim.bo.softtabstop = 2
+      vim.bo.tabstop     = 2
+    end
+  end
+})
+
 local packer_bootstrap = ensure_packer()
+vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.format()]]
 
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use {
     "williamboman/mason.nvim",
-    config=function()
-	    require("mason").setup()
-    end
   }
   use {
     "williamboman/mason-lspconfig.nvim",
-    config=function()
-	    require("mason-registry").refresh()
-	    require("mason-lspconfig").setup{
-		    ensure_installed = { "lua_ls" },
-	    }
+    config = function()
+      --	    require("mason").setup()
+      --	    require("mason-registry").refresh()
+      --	    require("mason-lspconfig").setup{
+      --		    ensure_installed = { "lua_ls"            },
+      --	    }
     end
   }
   use {
     "neovim/nvim-lspconfig",
+    config = function()
+      require("mason").setup()
+      require("mason-registry").refresh()
+      require("mason-lspconfig").setup {
+      }
+      vim.api.nvim_create_user_command('Upper', 'LspInstall lua_ls', { nargs = 0 })
+
+      require("mason-lspconfig").setup_handlers {
+        function(server_name) -- default handler (optional)
+          require("lspconfig")[server_name].setup {}
+        end,
+      }
+    end
   }
   if packer_bootstrap then
     require('packer').sync()
