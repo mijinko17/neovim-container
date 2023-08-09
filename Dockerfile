@@ -12,6 +12,7 @@ COPY --from=curl /download/nvim.appimage .
 RUN chmod u+x nvim.appimage
 RUN ./nvim.appimage --appimage-extract
 RUN ln -s /neovim/squashfs-root/AppRun /usr/bin/nvim
+RUN rm ./nvim.appimage
 COPY .config/ /root/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
 RUN nvim --headless -c 'LspInstall lua_ls' -c qall

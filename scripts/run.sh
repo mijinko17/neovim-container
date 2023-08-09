@@ -3,7 +3,6 @@
 readonly neovim_target_absolute_path_in_host=$(readlink -f $1)
 readonly current_directory_absolute_path_in_host=$(pwd)
 readonly container_name=neovim-container-develop
-readonly container_name_regex=/neovim-container-develop$
 
 function relative_path_from_home_directory() {
   readonly regex="${HOME}/(.+)"
@@ -27,21 +26,12 @@ if ! readonly neovim_target_relative_path=$(relative_path_from_home_directory $n
 fi
 readonly neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
 
-if [ "$(docker ps -aq -f name="$container_name_regex")" ]; then
-    docker start $container_name &> /dev/null
-    docker exec \
-    --interactive \
-    --tty \
-    --workdir $current_directory_absolute_path_in_containier \
-    $container_name nvim $neovim_target_absolute_path_in_container
-    docker stop $container_name &> /dev/null
-else
-  docker run \
-    --name $container_name \
-    --interactive \
-    --tty \
-    --volume $HOME:/home/host \
-    --workdir $current_directory_absolute_path_in_containier \
-    --network=host \
-    mijinko17/neovim-container:develop nvim $neovim_target_absolute_path_in_container
-fi
+docker run \
+  --rm \
+  --name $container_name \
+  --interactive \
+  --tty \
+  --volume $HOME:/home/host \
+  --workdir $current_directory_absolute_path_in_containier \
+  --network=host \
+  mijinko17/neovim-container:develop nvim $neovim_target_absolute_path_in_container
