@@ -74,6 +74,24 @@ return require('packer').startup(function(use)
       vim.cmd 'colorscheme hybrid_material'
     end,
   }
+  use {
+    'ojroques/nvim-osc52',
+    config = function()
+      local function copy(lines, _)
+        require('osc52').copy(table.concat(lines, '\n'))
+      end
+
+      local function paste()
+        return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') }
+      end
+
+      vim.g.clipboard = {
+        name = 'osc52',
+        copy = { ['+'] = copy, ['*'] = copy },
+        paste = { ['+'] = paste, ['*'] = paste },
+      }
+    end,
+  }
   if packer_bootstrap then
     require('packer').sync()
   end
