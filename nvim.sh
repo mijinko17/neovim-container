@@ -17,7 +17,7 @@ function relative_path_from_home_directory() {
 
 function upgrade(){
   docker rm $container_name
-  docker image rm mijinko17/neovim-container:latest
+  docker image pull mijinko17/neovim-container:latest
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh > $0
 }
 
