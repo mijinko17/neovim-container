@@ -16,8 +16,11 @@ function relative_path_from_home_directory() {
 }
 
 function upgrade(){
+  echo 'Delete container.'
   docker rm $container_name
+  echo 'Delete old image.'
   docker image pull mijinko17/neovim-container:latest
+  echo 'Update launch script'
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh > $0
 }
 
