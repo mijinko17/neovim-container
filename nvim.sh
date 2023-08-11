@@ -16,7 +16,7 @@ function relative_path_from_home_directory() {
 }
 
 function upgrade(){
-  echo $0
+  curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh > $0
 }
 
 neovim_opt=''
