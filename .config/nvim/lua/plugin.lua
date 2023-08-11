@@ -92,6 +92,22 @@ return require('packer').startup(function(use)
       }
     end,
   }
+  use({
+    "jose-elias-alvarez/null-ls.nvim",
+    requires = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup()
+    end
+  })
+  use({
+    "jay-babu/mason-null-ls.nvim",
+    config = function()
+      require("mason-null-ls").setup({
+        handlers = {},
+      })
+    end
+  })
   if packer_bootstrap then
     require('packer').sync()
   end
