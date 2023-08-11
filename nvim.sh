@@ -5,8 +5,6 @@ readonly current_directory_absolute_path_in_host=$(pwd)
 readonly container_name=neovim-container
 readonly container_name_regex=/neovim-container$
 
-echo test
-
 function relative_path_from_home_directory() {
   readonly regex="${HOME}/(.+)"
   if [[ $1 =~ $regex ]]; then
