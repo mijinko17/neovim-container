@@ -1,12 +1,39 @@
 #!/usr/bin/env bash
 
-readonly container_name=neovim-container
-readonly container_name_regex=/neovim-container$
-readonly container_temp_name=neovim-container-temp
+readonly container_name_prefix=neovim-container
+for_develop=false
+
+function container_tag() {
+  if "${for_develop}" ;then
+    echo develop
+  else
+    echo latest
+  fi
+}
+
+function image_name() {
+  echo mijinko17/neovim-container:"$(container_tag)"
+}
+
+function container_name() {
+  if "${for_develop}" ;then
+    echo "$container_name_prefix"-develop
+  else
+    echo "$container_name_prefix"
+  fi
+}
+
+function container_temp_name() {
+  if "${for_develop}" ;then
+    echo "$container_name_prefix"-temp-develop
+  else
+    echo "$container_name_prefix"-temp
+  fi
+}
 
 function upgrade() {
   echo 'Delete container.'
-  docker rm $container_name
+  docker rm "$(container_name)"
   echo 'Delete old image.'
   docker image pull mijinko17/neovim-container:latest
   echo 'Update launch script'
@@ -17,23 +44,26 @@ function run() {
   local -r workdir=$1
   local -r nvim_opt=$2
   local -r nvim_file=$3
-  if [ "$(docker ps -aq -f name="$container_name_regex")" ]; then
-      docker start $container_name &> /dev/null
+  local -r name=$(container_name)
+  local -r name_regex=/$(container_name)$
+
+  if [ "$(docker ps -aq -f name="$name_regex")" ]; then
+      docker start $name &> /dev/null
       docker exec \
       --interactive \
       --tty \
       --workdir $workdir \
-      $container_name nvim $nvim_opt -- $nvim_file
-      docker stop $container_name &> /dev/null
+      "$name" nvim $nvim_opt -- $nvim_file
+      docker stop $name &> /dev/null
   else
     docker run \
-      --name $container_name \
+      --name $name \
       --interactive \
       --tty \
       --volume $HOME:/home/host \
       --workdir $workdir \
       --network=host \
-      mijinko17/neovim-container:latest nvim $nvim_opt -- $nvim_file
+      "$(image_name)" nvim $nvim_opt -- $nvim_file
   fi
 }
 
@@ -41,10 +71,11 @@ function run_temp_for_single_file() {
   local -r nvim_opt=$1
   local -r nvim_file=$2
   local -r file_name=$(basename "$nvim_file")
+  local -r name=$(container_temp_name)
 
   docker run \
     --rm \
-    --name "$container_temp_name" \
+    --name "$name" \
     --interactive \
     --tty \
     --volume $nvim_file:/home/host/$file_name \
@@ -72,6 +103,7 @@ if [ $# -eq 0 ];then
 elif [ $# -eq 1 ]; then
   case $1 in
     --upgrade ) upgrade; exit ;;
+    --develop ) for_develop=true;;
     -?*) neovim_opt=$1;;
     *) file_path=$1;;
   esac
@@ -79,6 +111,7 @@ else
   while [ $# -gt 0 ]; do
     case $1 in
       --upgrade ) upgrade; exit ;;
+      --develop ) for_develop=true;;
       --) shift; file_path=$1; break;;
       *) neovim_opt="$neovim_opt $1"
     esac
