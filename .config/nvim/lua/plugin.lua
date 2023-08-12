@@ -27,6 +27,8 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use "williamboman/mason.nvim"
   use "williamboman/mason-lspconfig.nvim"
+  use 'L3MON4D3/LuaSnip'
+  use 'saadparwaiz1/cmp_luasnip'
   use {
     "neovim/nvim-lspconfig",
     config = function()
@@ -49,7 +51,22 @@ return require('packer').startup(function(use)
     },
     config = function()
       vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
-      require 'cmp'.setup { sources = { { name = 'path' }, { name = 'nvim_lsp' } } }
+      local cmp = require 'cmp'
+      require 'cmp'.setup({
+        snippet = {
+          expand = function(args)
+            require('luasnip').lsp_expand(args.body)
+          end,
+        },
+        --mapping = cmp.mapping.preset.insert({
+        --  ["<C-p>"] = cmp.mapping.select_prev_item(),
+        --  ["<C-n>"] = cmp.mapping.select_next_item(),
+        --  ['<C-l>'] = cmp.mapping.complete(),
+        --  ['<C-e>'] = cmp.mapping.abort(),
+        --  ["<CR>"] = cmp.mapping.confirm { select = true },
+        --}),
+        sources = { { name = 'path' }, { name = 'nvim_lsp' } }
+      })
     end
   }
   use {
@@ -84,7 +101,6 @@ return require('packer').startup(function(use)
       local function paste()
         return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') }
       end
-
       vim.g.clipboard = {
         name = 'osc52',
         copy = { ['+'] = copy, ['*'] = copy },
