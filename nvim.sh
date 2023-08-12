@@ -2,24 +2,9 @@
 
 readonly container_name=neovim-container
 readonly container_name_regex=/neovim-container$
+readonly container_temp_name=neovim-container-temp
 
-function relative_path_from_home_directory() {
-  local -r regex="${HOME}/(.+)"
-  if [[ $1 =~ $regex ]]; then
-    echo "${BASH_REMATCH[1]}"
-    return 0
-  else
-    return 1
-  fi
-}
-
-if ! current_directory_relative_path=$(relative_path_from_home_directory "$(pwd)"); then
-  echo "You are not in home directory."
-  exit 1
-fi
-readonly current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
-
-function upgrade(){
+function upgrade() {
   echo 'Delete container.'
   docker rm $container_name
   echo 'Delete old image.'
@@ -28,7 +13,7 @@ function upgrade(){
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh > $0
 }
 
-function run(){
+function run() {
   local -r workdir=$1
   local -r nvim_opt=$2
   local -r nvim_file=$3
@@ -52,56 +37,45 @@ function run(){
   fi
 }
 
-function run_with_file(){
-  local -r option=$1
-  local -r relative_path=$2
-  local -r abs_path=$(readlink -f "$relative_path")
+function run_temp_for_single_file() {
+  local -r nvim_opt=$1
+  local -r nvim_file=$2
+  local -r file_name=$(basename "$nvim_file")
 
-  if ! neovim_target_relative_path=$(relative_path_from_home_directory "$abs_path"); then
-    echo "Target file does not exist in home directory."
-    exit 1
+  docker run \
+    --rm \
+    --name "$container_temp_name" \
+    --interactive \
+    --tty \
+    --volume $nvim_file:/home/host/$file_name \
+    --workdir /home/host \
+    --network=host \
+    mijinko17/neovim-container:latest nvim $nvim_opt -- $file_name
+}
+
+function relative_path_from_home_directory() {
+  local -r regex="${HOME}/(.+)"
+  if [[ $1 =~ $regex ]]; then
+    echo "${BASH_REMATCH[1]}"
+    return 0
+  else
+    return 1
   fi
-  readonly neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
-  run $current_directory_absolute_path_in_containier "$option" "$neovim_target_absolute_path_in_container"
 }
 
-function run_with_no_file(){
-  local -r option=$1
-  run $current_directory_absolute_path_in_containier "$option" ""
-}
-
-function run_with_no_option_no_file(){
-  run_with_no_file ""
-}
-
-function run_with_no_option_with_file(){
-  local -r relative_path=$1
-  run_with_file "" "$relative_path"
-}
-
-function run_with_option_with_no_file(){
-  local -r option=$1
-  run_with_no_file "$option"
-  #run $current_directory_absolute_path_in_containier "$option" ""
-}
-
-function run_with_option_with_file(){
-  local -r option=$1
-  local -r relative_path=$2
-  run_with_file "$option" "$relative_path"
-}
+neovim_opt=''
+file_path=''
 
 if [ $# -eq 0 ];then
-  run_with_no_option_no_file
-  exit
+  neovim_opt=''
+  file_path=''
 elif [ $# -eq 1 ]; then
   case $1 in
     --upgrade ) upgrade; exit ;;
-    -?*) neovim_opt=$1; run_with_option_with_no_file "$neovim_opt"; exit;;
-    *) file_path=$1; run_with_no_option_with_file "$file_path"; exit;;
+    -?*) neovim_opt=$1;;
+    *) file_path=$1;;
   esac
 else
-  neovim_opt=''
   while [ $# -gt 0 ]; do
     case $1 in
       --upgrade ) upgrade; exit ;;
@@ -110,12 +84,27 @@ else
     esac
     shift
   done
-  if [ "$file_path" = '' ];then
-    run_with_option_with_no_file "$neovim_opt"
-    exit
-  else
-    run_with_option_with_file "$neovim_opt" "$file_path"
+fi
+
+absolute_file_path=$(readlink -f "$file_path")
+
+if ! current_directory_relative_path=$(relative_path_from_home_directory "$(pwd)"); then
+  echo "You are not in home directory."
+  run_temp_for_single_file "$neovim_opt" "$absolute_file_path"
+  exit
+fi
+readonly current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
+
+if [ "$file_path" != '' ];then
+  abs_path=$(readlink -f "$file_path")
+  if ! neovim_target_relative_path=$(relative_path_from_home_directory "$abs_path"); then
+    echo "Target file does not exist in home directory."
+    run_temp_for_single_file "$neovim_opt" "$absolute_file_path"
     exit
   fi
+  readonly neovim_target_absolute_path_in_container=/home/host/$neovim_target_relative_path
 fi
+
+run "$current_directory_absolute_path_in_containier" "$neovim_opt" "$neovim_target_absolute_path_in_container"
+exit
 
