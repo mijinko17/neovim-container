@@ -19,7 +19,7 @@ RUN useradd mijinko -m -u 1001
 USER mijinko
 COPY --chown=mijinko .config/ /home/mijinko/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
-RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck' -c qall
+RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
 USER root
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
