@@ -3,6 +3,11 @@
 readonly container_name_prefix=neovim-container
 for_develop=false
 
+if [ "$1" = --develop ]; then
+  for_develop=true
+  shift
+fi
+
 function container_tag() {
   if "${for_develop}" ;then
     echo develop
@@ -103,7 +108,6 @@ if [ $# -eq 0 ];then
 elif [ $# -eq 1 ]; then
   case $1 in
     --upgrade ) upgrade; exit ;;
-    --develop ) for_develop=true;;
     -?*) neovim_opt=$1;;
     *) file_path=$1;;
   esac
@@ -111,7 +115,6 @@ else
   while [ $# -gt 0 ]; do
     case $1 in
       --upgrade ) upgrade; exit ;;
-      --develop ) for_develop=true;;
       --) shift; file_path=$1; break;;
       *) neovim_opt="$neovim_opt $1"
     esac
