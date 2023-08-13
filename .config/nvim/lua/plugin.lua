@@ -43,6 +43,7 @@ return require('packer').startup(function(use)
       vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
       vim.keymap.set({ 'n', 'v' }, '<leader>rn', function() vim.lsp.buf.rename() end, {})
       vim.keymap.set({ 'n' }, '<leader>ca', function() vim.lsp.buf.code_action() end, {})
+      vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, {})
     end
   }
   use {
