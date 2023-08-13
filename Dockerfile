@@ -14,7 +14,10 @@ RUN chmod u+x nvim.appimage
 RUN ./nvim.appimage --appimage-extract
 RUN ln -s /neovim/squashfs-root/AppRun /usr/bin/nvim
 RUN rm ./nvim.appimage
-COPY .config/ /root/.config
+RUN userdel node
+RUN useradd mijinko -m -u 1001
+USER mijinko
+COPY --chown=mijinko .config/ /home/mijinko/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
 RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck' -c qall
 CMD ["nvim"]
