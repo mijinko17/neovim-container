@@ -9,7 +9,7 @@ if [ "$1" = --develop ]; then
 fi
 
 function container_tag() {
-  if "${for_develop}" ;then
+  if "${for_develop}"; then
     echo develop
   else
     echo latest
@@ -21,7 +21,7 @@ function image_name() {
 }
 
 function container_name() {
-  if "${for_develop}" ;then
+  if "${for_develop}"; then
     echo "$container_name_prefix"-develop
   else
     echo "$container_name_prefix"
@@ -29,7 +29,7 @@ function container_name() {
 }
 
 function container_temp_name() {
-  if "${for_develop}" ;then
+  if "${for_develop}"; then
     echo "$container_name_prefix"-temp-develop
   else
     echo "$container_name_prefix"-temp
@@ -42,7 +42,7 @@ function upgrade() {
   echo 'Delete old image.'
   docker image pull mijinko17/neovim-container:latest
   echo 'Update launch script'
-  curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh > $0
+  curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh >$0
 }
 
 function run() {
@@ -53,14 +53,14 @@ function run() {
   local -r name_regex=/$(container_name)$
 
   if [ "$(docker ps -aq -f name="$name_regex")" ]; then
-      docker start $name &> /dev/null
-      docker exec \
+    docker start $name &>/dev/null
+    docker exec \
       --interactive \
       --tty \
       --user mijinko \
       --workdir $workdir \
       "$name" nvim $nvim_opt -- $nvim_file
-      docker stop $name &> /dev/null
+    docker stop $name &>/dev/null
   else
     docker run \
       --name $name \
@@ -103,21 +103,31 @@ function relative_path_from_home_directory() {
 neovim_opt=''
 file_path=''
 
-if [ $# -eq 0 ];then
+if [ $# -eq 0 ]; then
   neovim_opt=''
   file_path=''
 elif [ $# -eq 1 ]; then
   case $1 in
-    --upgrade ) upgrade; exit ;;
-    -?*) neovim_opt=$1;;
-    *) file_path=$1;;
+  --upgrade)
+    upgrade
+    exit
+    ;;
+  -?*) neovim_opt=$1 ;;
+  *) file_path=$1 ;;
   esac
 else
   while [ $# -gt 0 ]; do
     case $1 in
-      --upgrade ) upgrade; exit ;;
-      --) shift; file_path=$1; break;;
-      *) neovim_opt="$neovim_opt $1"
+    --upgrade)
+      upgrade
+      exit
+      ;;
+    --)
+      shift
+      file_path=$1
+      break
+      ;;
+    *) neovim_opt="$neovim_opt $1" ;;
     esac
     shift
   done
@@ -132,7 +142,7 @@ if ! current_directory_relative_path=$(relative_path_from_home_directory "$(pwd)
 fi
 readonly current_directory_absolute_path_in_containier=/home/host/$current_directory_relative_path
 
-if [ "$file_path" != '' ];then
+if [ "$file_path" != '' ]; then
   abs_path=$(readlink -f "$file_path")
   if ! neovim_target_relative_path=$(relative_path_from_home_directory "$abs_path"); then
     echo "Target file does not exist in home directory."
@@ -144,4 +154,3 @@ fi
 
 run "$current_directory_absolute_path_in_containier" "$neovim_opt" "$neovim_target_absolute_path_in_container"
 exit
-
