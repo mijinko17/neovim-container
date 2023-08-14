@@ -57,7 +57,7 @@ function run() {
     docker exec \
       --interactive \
       --tty \
-      --user mijinko \
+      --user neovim \
       --workdir $workdir \
       "$name" nvim $nvim_opt -- $nvim_file
     docker stop $name &>/dev/null

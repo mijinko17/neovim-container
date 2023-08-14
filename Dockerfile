@@ -3,6 +3,7 @@ WORKDIR /download
 RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
 
 FROM node:bookworm-slim
+ARG user="neovim"
 RUN apt-get update
 RUN apt-get install git -y
 RUN apt-get install curl -y
@@ -15,9 +16,9 @@ RUN ./nvim.appimage --appimage-extract
 RUN ln -s /neovim/squashfs-root/AppRun /usr/bin/nvim
 RUN rm ./nvim.appimage
 RUN userdel node
-RUN useradd mijinko -m -u 1001
-USER mijinko
-COPY --chown=mijinko .config/ /home/mijinko/.config
+RUN useradd $user -m -u 1000
+USER $user
+COPY --chown=$user .config/ /home/$user/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
 RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
 USER root

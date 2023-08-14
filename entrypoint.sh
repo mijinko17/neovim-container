@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export USER=mijinko
+export USER=neovim
 export HOME=/home/$USER
 
 uid=$(stat -c "%u" .)
