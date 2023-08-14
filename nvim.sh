@@ -91,7 +91,7 @@ function run_temp_for_single_file() {
 }
 
 function relative_path_from_home_directory() {
-  local -r regex="${HOME}/(.+)"
+  local -r regex="${HOME}/(.+)|${HOME}"
   if [[ $1 =~ $regex ]]; then
     echo "${BASH_REMATCH[1]}"
     return 0
