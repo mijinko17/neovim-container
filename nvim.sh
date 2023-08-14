@@ -67,6 +67,7 @@ function run() {
       --interactive \
       --tty \
       --volume $HOME:/home/host \
+      --volume $HOME/.gitconfig:/home/neovim/.gitconfig \
       --workdir $workdir \
       --network=host \
       "$(image_name)" nvim $nvim_opt -- $nvim_file
