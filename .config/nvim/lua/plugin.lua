@@ -9,43 +9,56 @@ local ensure_packer = function()
   return false
 end
 
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = '*',
-  callback = function(args)
-    if args.match == 'lua' then
-      vim.bo.expandtab   = true
-      vim.bo.shiftwidth  = 2
-      vim.bo.softtabstop = 2
-      vim.bo.tabstop     = 2
-    end
-  end
-})
-
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
-  use "williamboman/mason.nvim"
-  use "williamboman/mason-lspconfig.nvim"
-  use 'L3MON4D3/LuaSnip'
-  use 'saadparwaiz1/cmp_luasnip'
   use {
-    "neovim/nvim-lspconfig",
+    "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
-      require("mason-registry").refresh()
-      require("mason-lspconfig").setup()
-      require("mason-lspconfig").setup_handlers {
-        function(server_name)
-          require("lspconfig")[server_name].setup {}
-        end,
-      }
       vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
       vim.keymap.set({ 'n', 'v' }, '<leader>rn', function() vim.lsp.buf.rename() end, {})
       vim.keymap.set({ 'n' }, '<leader>ca', function() vim.lsp.buf.code_action() end, {})
       vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, {})
     end
   }
+  use {
+    "williamboman/mason-lspconfig.nvim",
+    after = 'mason.nvim',
+    config = function()
+      require("mason-lspconfig").setup()
+    end
+  }
+  use {
+    after = 'mason-lspconfig.nvim',
+    "neovim/nvim-lspconfig",
+    config = function()
+      require("mason-lspconfig").setup_handlers {
+        function(server_name)
+          require("lspconfig")[server_name].setup {}
+        end,
+      }
+    end
+  }
+  use({
+    "jose-elias-alvarez/null-ls.nvim",
+    requires = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup()
+    end
+  })
+  use({
+    "jay-babu/mason-null-ls.nvim",
+    config = function()
+      require("mason-null-ls").setup({
+        handlers = {},
+      })
+    end
+  })
+  use 'L3MON4D3/LuaSnip'
+  use 'saadparwaiz1/cmp_luasnip'
   use {
     'hrsh7th/nvim-cmp',
     requires = {
@@ -111,22 +124,6 @@ return require('packer').startup(function(use)
       }
     end,
   }
-  use({
-    "jose-elias-alvarez/null-ls.nvim",
-    requires = { "nvim-lua/plenary.nvim" },
-    config = function()
-      local null_ls = require("null-ls")
-      null_ls.setup()
-    end
-  })
-  use({
-    "jay-babu/mason-null-ls.nvim",
-    config = function()
-      require("mason-null-ls").setup({
-        handlers = {},
-      })
-    end
-  })
   use({
     "lewis6991/gitsigns.nvim",
     config = function()

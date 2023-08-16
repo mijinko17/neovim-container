@@ -42,14 +42,6 @@ function container_name() {
   fi
 }
 
-function container_temp_name() {
-  if "${for_develop}"; then
-    echo "$container_name_prefix"-temp-develop
-  else
-    echo "$container_name_prefix"-temp
-  fi
-}
-
 function upgrade() {
   echo 'Delete local image.'
   docker image rm "$(local_image_name)"
