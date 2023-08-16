@@ -59,13 +59,9 @@ function upgrade() {
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh >$0
 }
 
-function run() {
-  local -r workdir=$1
-  local -r nvim_opt=$2
-  local -r nvim_file=$3
-  local -r name=$(container_name)
-
+function build_local_image_if_need() {
   if [ ! "$(docker image ls -q $(local_image_name))" ]; then
+    echo 'Local image does not exist. Build image.'
     local -r uid=$(id -u $(whoami))
     local -r gid=$(id -u $(whoami))
 
@@ -78,6 +74,16 @@ function run() {
     USER $user
 EOF
   fi
+}
+
+function run() {
+  build_local_image_if_need
+
+  local -r workdir=$1
+  local -r nvim_opt=$2
+  local -r nvim_file=$3
+  local -r name=$(container_name)
+
   docker run \
     --rm \
     --name $name \
@@ -92,10 +98,12 @@ EOF
 }
 
 function run_temp_for_single_file() {
+  build_local_image_if_need
+
   local -r nvim_opt=$1
   local -r nvim_file=$2
   local -r file_name=$(basename "$nvim_file")
-  local -r name=$(container_temp_name)
+  local -r name=$(container_name)
 
   docker run \
     --rm \
@@ -105,7 +113,7 @@ function run_temp_for_single_file() {
     --volume $nvim_file:/home/host/$file_name \
     --workdir /home/host \
     --network=host \
-    mijinko17/neovim-container:latest nvim $nvim_opt -- $file_name
+    $(local_image_name) nvim $nvim_opt -- $file_name
 }
 
 function relative_path_from_home_directory() {
