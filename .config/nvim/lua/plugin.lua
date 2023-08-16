@@ -82,7 +82,7 @@ return require('packer').startup(function(use)
       require('telescope').setup {
         defaults = {
           file_ignore_patterns = {
-            ".git"
+            "^.git/"
           }
         }
       }
