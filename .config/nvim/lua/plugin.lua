@@ -130,6 +130,7 @@ return require('packer').startup(function(use)
   use({
     "lewis6991/gitsigns.nvim",
     config = function()
+      local gitsigns = require('gitsigns')
       require('gitsigns').setup {
         signs                        = {
           add          = { text = '│' },
@@ -171,6 +172,7 @@ return require('packer').startup(function(use)
           enable = false
         },
       }
+      vim.keymap.set({ 'n' }, '<leader>vr', function() gitsigns.reset_hunk() end, {})
     end
   })
   use({
@@ -180,7 +182,13 @@ return require('packer').startup(function(use)
       neogit.setup {}
     end
   })
-  use "sindrets/diffview.nvim"
+  use({
+    "sindrets/diffview.nvim",
+    config = function()
+      vim.keymap.set({ 'n' }, '<leader>vd', ':DiffviewOpen<CR>', {})
+      vim.keymap.set({ 'n' }, '<leader>vdc', ':DiffviewClose<CR>', {})
+    end
+  })
   if packer_bootstrap then
     require('packer').sync()
   end

@@ -52,6 +52,20 @@ function run() {
   local -r name=$(container_name)
   local -r name_regex=/$(container_name)$
 
+  if [ ! "$(docker image ls -q mijinko17/neovim-container:local)" ]; then
+    local -r uid=$(id -u $(whoami))
+    local -r gid=$(id -u $(whoami))
+
+    docker build -t mijinko17/neovim-container:local - <<EOF
+    FROM mijinko17/neovim-container:develop
+    USER root
+    RUN groupmod -g $gid neovim
+    RUN chgrp -R $gid /home/neovim
+    RUN usermod -u $uid neovim
+    USER neovim
+EOF
+  fi
+
   if [ "$(docker ps -aq -f name="$name_regex")" ]; then
     docker start $name &>/dev/null
     docker exec \
@@ -63,6 +77,7 @@ function run() {
     docker stop $name &>/dev/null
   else
     docker run \
+      --rm \
       --name $name \
       --interactive \
       --tty \
@@ -71,7 +86,7 @@ function run() {
       --volume $HOME/.ssh:/home/neovim/.ssh \
       --workdir $workdir \
       --network=host \
-      "$(image_name)" nvim $nvim_opt -- $nvim_file
+      mijinko17/neovim-container:local nvim $nvim_opt -- $nvim_file
   fi
 }
 
