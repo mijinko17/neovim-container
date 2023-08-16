@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+readonly user=neovim
 readonly container_name_prefix=neovim-container
+readonly image_name_prefix=mijinko17/neovim-container
 for_develop=false
 
 if [ "$1" = --develop ]; then
@@ -8,7 +10,7 @@ if [ "$1" = --develop ]; then
   shift
 fi
 
-function container_tag() {
+function base_image_tag() {
   if "${for_develop}"; then
     echo develop
   else
@@ -16,8 +18,20 @@ function container_tag() {
   fi
 }
 
-function image_name() {
-  echo mijinko17/neovim-container:"$(container_tag)"
+function local_image_tag() {
+  if "${for_develop}"; then
+    echo local_develop
+  else
+    echo local
+  fi
+}
+
+function base_image_name() {
+  echo $image_name_prefix:"$(base_image_tag)"
+}
+
+function local_image_name() {
+  echo $image_name_prefix:"$(local_image_tag)"
 }
 
 function container_name() {
@@ -37,10 +51,10 @@ function container_temp_name() {
 }
 
 function upgrade() {
-  echo 'Delete container.'
-  docker rm "$(container_name)"
-  echo 'Delete old image.'
-  docker image pull mijinko17/neovim-container:latest
+  echo 'Delete local image.'
+  docker image rm "$(local_image_name)"
+  echo 'Update base image.'
+  docker image pull "$(base_image_name)"
   echo 'Update launch script'
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh >$0
 }
@@ -50,44 +64,31 @@ function run() {
   local -r nvim_opt=$2
   local -r nvim_file=$3
   local -r name=$(container_name)
-  local -r name_regex=/$(container_name)$
 
-  if [ ! "$(docker image ls -q mijinko17/neovim-container:local)" ]; then
+  if [ ! "$(docker image ls -q $(local_image_name))" ]; then
     local -r uid=$(id -u $(whoami))
     local -r gid=$(id -u $(whoami))
 
-    docker build -t mijinko17/neovim-container:local - <<EOF
-    FROM mijinko17/neovim-container:develop
+    docker build -t $(local_image_name) - <<EOF
+    FROM $(base_image_name)
     USER root
-    RUN groupmod -g $gid neovim
-    RUN chgrp -R $gid /home/neovim
-    RUN usermod -u $uid neovim
-    USER neovim
+    RUN groupmod -g $gid $user
+    RUN chgrp -R $gid /home/$user
+    RUN usermod -u $uid $user
+    USER $user
 EOF
   fi
-
-  if [ "$(docker ps -aq -f name="$name_regex")" ]; then
-    docker start $name &>/dev/null
-    docker exec \
-      --interactive \
-      --tty \
-      --user neovim \
-      --workdir $workdir \
-      "$name" nvim $nvim_opt -- $nvim_file
-    docker stop $name &>/dev/null
-  else
-    docker run \
-      --rm \
-      --name $name \
-      --interactive \
-      --tty \
-      --volume $HOME:/home/host \
-      --volume $HOME/.gitconfig:/home/neovim/.gitconfig \
-      --volume $HOME/.ssh:/home/neovim/.ssh \
-      --workdir $workdir \
-      --network=host \
-      mijinko17/neovim-container:local nvim $nvim_opt -- $nvim_file
-  fi
+  docker run \
+    --rm \
+    --name $name \
+    --interactive \
+    --tty \
+    --volume $HOME:/home/host \
+    --volume $HOME/.gitconfig:/home/$user/.gitconfig \
+    --volume $HOME/.ssh:/home/$user/.ssh \
+    --workdir $workdir \
+    --network=host \
+    $(local_image_name) nvim $nvim_opt -- $nvim_file
 }
 
 function run_temp_for_single_file() {

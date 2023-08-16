@@ -17,5 +17,4 @@ USER $user
 COPY --chown=$user .config/ /home/$user/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
 RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
-COPY entrypoint.sh /
 
