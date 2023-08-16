@@ -176,17 +176,18 @@ return require('packer').startup(function(use)
     end
   })
   use({
-    "NeogitOrg/neogit",
-    config = function()
-      local neogit = require('neogit')
-      neogit.setup {}
-    end
-  })
-  use({
     "sindrets/diffview.nvim",
     config = function()
       vim.keymap.set({ 'n' }, '<leader>vd', ':DiffviewOpen<CR>', {})
       vim.keymap.set({ 'n' }, '<leader>vdc', ':DiffviewClose<CR>', {})
+    end
+  })
+  use({
+    "NeogitOrg/neogit",
+    after = 'diffview.nvim',
+    config = function()
+      local neogit = require('neogit')
+      neogit.setup {}
     end
   })
   if packer_bootstrap then
