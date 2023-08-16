@@ -12,7 +12,7 @@ RUN ln -s /neovim/squashfs-root/AppRun /usr/bin/nvim
 RUN rm ./nvim.appimage
 ARG user="neovim"
 RUN userdel node
-RUN useradd $user
+RUN useradd -m $user
 USER $user
 COPY --chown=$user .config/ /home/$user/.config
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
