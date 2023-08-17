@@ -13,11 +13,17 @@ local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
+  use({
+    "Pocco81/auto-save.nvim",
+    config = function()
+      require("auto-save").setup {}
+    end,
+  })
   use {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
-      vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+      vim.keymap.set({ 'n' }, '<leader>fm', function() vim.lsp.buf.format() end, {})
       vim.keymap.set({ 'n', 'v' }, '<leader>rn', function() vim.lsp.buf.rename() end, {})
       vim.keymap.set({ 'n' }, '<leader>ca', function() vim.lsp.buf.code_action() end, {})
       vim.keymap.set('n', 'K', function() vim.lsp.buf.hover() end, {})
@@ -91,7 +97,7 @@ return require('packer').startup(function(use)
     config = function()
       local builtin = require('telescope.builtin')
       vim.keymap.set('n', '<leader>p', function() builtin.find_files({ hidden = true }) end, {})
-      vim.keymap.set('n', '<leader>f', builtin.live_grep, {})
+      vim.keymap.set('n', '<leader>ff', builtin.live_grep, {})
       require('telescope').setup {
         defaults = {
           file_ignore_patterns = {
