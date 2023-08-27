@@ -14,8 +14,9 @@ RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appi
     rm ./nvim.appimage
 
 ARG user="neovim"
+ARG uid
 RUN userdel node && \
-    useradd -m $user
+    useradd --uid $uid -m $user
 USER $user
 
 COPY --chown=$user .config/ /home/$user/.config

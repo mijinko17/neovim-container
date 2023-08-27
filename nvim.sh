@@ -3,6 +3,8 @@
 readonly user=neovim
 readonly container_name_prefix=neovim-container
 readonly image_name_prefix=mijinko17/neovim-container
+readonly uid="$(id -u "$(whoami)")"
+
 for_develop=false
 
 if [ "$1" = --develop ]; then
@@ -42,6 +44,10 @@ function container_name() {
   fi
 }
 
+function image_name_with_uid() {
+  echo "${image_name_prefix}-uid-${uid}:$(base_image_tag)"
+}
+
 function upgrade() {
   echo 'Delete local image.'
   docker image rm "$(local_image_name)"
@@ -69,16 +75,15 @@ EOF
 }
 
 function run() {
-  build_local_image_if_need
+  #build_local_image_if_need
 
   local -r workdir=$1
   local -r nvim_opt=$2
   local -r nvim_file=$3
-  local -r name=$(container_name)
+  #local -r name=$(container_name)
 
   docker run \
     --rm \
-    --name $name \
     --interactive \
     --tty \
     --volume $HOME:/home/host \
@@ -86,7 +91,7 @@ function run() {
     --volume $HOME/.ssh:/home/$user/.ssh \
     --workdir $workdir \
     --network=host \
-    $(local_image_name) nvim $nvim_opt -- $nvim_file
+    $(image_name_with_uid) nvim $nvim_opt -- $nvim_file
 }
 
 function run_temp_for_single_file() {

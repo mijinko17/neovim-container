@@ -31,4 +31,6 @@ jobs:
           context: .
           push: true
           network: host
-          tags: mijinko17/neovim-container:latest
+          tags: mijinko17/neovim-container-uid-1000:latest
+          build-args: |
+            uid=1000
