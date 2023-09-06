@@ -180,11 +180,12 @@ return require('packer').startup(function(use)
   })
   use({
     "sindrets/diffview.nvim",
+    requires = { { 'nvim-tree/nvim-web-devicons' } },
     config = function()
       vim.keymap.set({ 'n' }, '<leader>vd', ':DiffviewOpen<CR>', {})
       vim.keymap.set({ 'n' }, '<leader>vdc', ':DiffviewClose<CR>', {})
       require("diffview").setup({
-        use_icons = false
+        -- use_icons = false
       })
     end
   })

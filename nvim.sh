@@ -52,7 +52,7 @@ function upgrade() {
   echo 'Delete local image.'
   docker image rm "$(local_image_name)"
   echo 'Update base image.'
-  docker image pull "$(base_image_name)"
+  docker image pull "$(image_name_with_uid)"
   echo 'Update launch script'
   curl https://raw.githubusercontent.com/mijinko17/neovim-container/main/nvim.sh >$0
 }
