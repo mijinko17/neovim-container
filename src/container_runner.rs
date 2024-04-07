@@ -1,6 +1,8 @@
-use std::{env::current_exe, path::PathBuf, process::Command};
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
-use dirs::home_dir;
 use pathdiff::diff_paths;
 
 pub fn run_container() {
@@ -53,30 +55,30 @@ impl NvimCommandExecutor {
 
 trait PathUtils<T>
 where
-    T: Into<PathBuf> + Clone,
+    T: AsRef<Path>,
 {
-    fn is_ancestor_of(&self, maybe_child: &T) -> bool;
-    fn relative_path_from(&self, maybe_ancsestor: &T) -> Option<PathBuf>;
+    fn is_ancestor_of(&self, maybe_child: T) -> bool;
+    fn relative_path_from_ancsestor(&self, maybe_ancsestor: T) -> Option<PathBuf>;
 }
 
 impl<T, U> PathUtils<T> for U
 where
-    T: Into<PathBuf> + Clone,
-    U: Into<PathBuf> + Clone,
+    T: AsRef<Path>,
+    U: AsRef<Path>,
 {
-    fn is_ancestor_of(&self, maybe_child: &T) -> bool {
-        let self_path_buf: PathBuf = self.clone().into();
+    fn is_ancestor_of(&self, maybe_child: T) -> bool {
+        let self_path_buf = self.as_ref();
         maybe_child
-            .clone()
-            .into()
+            .as_ref()
+            .to_path_buf()
             .ancestors()
             .into_iter()
             .any(|path| self_path_buf.eq(path))
     }
 
-    fn relative_path_from(&self, maybe_ancsestor: &T) -> Option<PathBuf> {
-        if maybe_ancsestor.is_ancestor_of(&self.clone().into()) {
-            diff_paths(self.clone(), maybe_ancsestor)
+    fn relative_path_from_ancsestor(&self, maybe_ancsestor: T) -> Option<PathBuf> {
+        if maybe_ancsestor.is_ancestor_of(self) {
+            diff_paths(self, maybe_ancsestor)
         } else {
             None
         }
@@ -91,11 +93,30 @@ mod tests {
 
     #[test]
     fn another() {
-        let a: PathBuf = Path::new("/home/yuki").into();
+        let a = Path::new("/home/yuki");
         let b: PathBuf = Path::new("/home/yuki/program").into();
         assert!(a.is_ancestor_of(b));
         let c: PathBuf = Path::new("/home/yuki").into();
-        let d: PathBuf = Path::new("/home/hogem").into();
+        let d = Path::new("/home/hogem");
         assert!(!c.is_ancestor_of(d));
+    }
+
+    #[test]
+    fn test_relative_path_from_ancsestor() {
+        let a: PathBuf = Path::new("/home/yuki").into();
+        let b: PathBuf = Path::new("/home/yuki/program/hoge/fuga").into();
+        assert_eq!(
+            b.relative_path_from_ancsestor(a),
+            Some(Path::new("program/hoge/fuga").to_path_buf())
+        );
+        let a: PathBuf = Path::new("/home/yuki").into();
+        let b: PathBuf = Path::new("/home/yuki-nagato/program/hoge/fuga").into();
+        assert_eq!(b.relative_path_from_ancsestor(a), None);
+        let a: PathBuf = Path::new("/home/yuki").into();
+        let b: PathBuf = Path::new("/home/poyo").into();
+        assert_eq!(b.relative_path_from_ancsestor(a), None);
+        let a: PathBuf = Path::new("/home/yuki").into();
+        let b: PathBuf = Path::new("/monyo").into();
+        assert_eq!(b.relative_path_from_ancsestor(a), None);
     }
 }
