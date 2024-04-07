@@ -1,18 +1,29 @@
 use std::{
+    ffi::OsStr,
     path::{Path, PathBuf},
     process::Command,
 };
 
-use crate::path::PathUtils;
+use crate::{cli::Args, path::PathUtils};
 
-pub fn run_container(dir_state_provider: impl DirectoryStateProvider) {
+pub fn run_container(
+    args: Args<impl AsRef<Path>>,
+    dir_state_provider: impl DirectoryStateProvider,
+) {
     let home_dir = dir_state_provider.home_dir().unwrap();
+    println!("home dir: {:?}", home_dir);
     let current_dir = dir_state_provider.current_dir().unwrap();
+    println!("current dir: {:?}", current_dir);
     let work_dir = Path::new("/home/host").join(
         current_dir
             .relative_path_from_ancsestor(home_dir.clone())
             .unwrap(),
     );
+    let target = args
+        .path
+        .map(|path| dir_state_provider.absolute_path(path))
+        .and_then(|abs_path| abs_path.relative_path_from_ancsestor(home_dir.clone()))
+        .map(|relative_path_from_home| Path::new("/home/host").join(relative_path_from_home));
     NvimCommandExecutor {
         image: "mijinko17/neovim-container:latest",
         volumes: vec![
@@ -27,6 +38,8 @@ pub fn run_container(dir_state_provider: impl DirectoryStateProvider) {
             ),
         ],
         work_dir,
+        // target_file_path: None as Option<PathBuf>,
+        target_file_path: target,
     }
     .execute();
 }
@@ -55,15 +68,17 @@ impl VolumeArg {
     }
 }
 
-struct NvimCommandExecutor<T: AsRef<Path>> {
+struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
     image: &'static str,
     volumes: Vec<VolumeArg>,
     work_dir: T,
+    target_file_path: Option<U>,
 }
 
-impl<T> NvimCommandExecutor<T>
+impl<T, U> NvimCommandExecutor<T, U>
 where
     T: AsRef<Path>,
+    U: AsRef<Path>,
 {
     pub fn execute(self) {
         Command::new("docker")
@@ -81,6 +96,10 @@ where
             )
             .arg(self.image)
             .arg("nvim")
+            .optional_arg(
+                self.target_file_path
+                    .and_then(move |p| p.as_ref().to_str().map(|s| s.to_string())),
+            )
             .spawn()
             .unwrap()
             .wait()
@@ -92,4 +111,17 @@ pub trait DirectoryStateProvider {
     fn current_dir(&self) -> Option<PathBuf>;
     fn home_dir(&self) -> Option<PathBuf>;
     fn absolute_path(&self, relative_path: impl AsRef<Path>) -> PathBuf;
+}
+
+pub trait OptionalArg {
+    fn optional_arg<S: AsRef<OsStr>>(&mut self, optional_arg: Option<S>) -> &mut Self;
+}
+
+impl OptionalArg for Command {
+    fn optional_arg<S: AsRef<OsStr>>(&mut self, optional_arg: Option<S>) -> &mut Self {
+        match optional_arg {
+            Some(value) => self.arg(value),
+            None => self,
+        }
+    }
 }
