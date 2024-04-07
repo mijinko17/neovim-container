@@ -14,4 +14,8 @@ impl DirectoryStateProvider for DirectoryStateProviderImpl {
     fn home_dir(&self) -> Option<PathBuf> {
         home_dir()
     }
+
+    fn absolute_path(&self, relative_path: impl AsRef<std::path::Path>) -> PathBuf {
+        std::fs::canonicalize(relative_path).unwrap()
+    }
 }

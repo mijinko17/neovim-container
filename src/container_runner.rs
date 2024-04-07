@@ -91,4 +91,5 @@ where
 pub trait DirectoryStateProvider {
     fn current_dir(&self) -> Option<PathBuf>;
     fn home_dir(&self) -> Option<PathBuf>;
+    fn absolute_path(&self, relative_path: impl AsRef<Path>) -> PathBuf;
 }
