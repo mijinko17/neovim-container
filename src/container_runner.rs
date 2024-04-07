@@ -27,22 +27,23 @@ struct NvimCommandExecutor {
 
 impl NvimCommandExecutor {
     pub fn execute(self) {
-        self.volumes
-            .into_iter()
-            .fold(
-                Command::new("docker")
-                    .arg("run")
-                    .arg("--rm")
-                    .arg("--interactive")
-                    .arg("--tty")
-                    .args(vec!["--workdir", self.work_dir.as_str()])
-                    .arg("--network=host"),
-                |acc, cur| {
-                    acc.args(vec![
-                        "--volumes",
-                        format!("{}:{}", cur.host_path, cur.container_path).as_str(),
-                    ])
-                },
+        Command::new("docker")
+            .arg("run")
+            .arg("--rm")
+            .arg("--interactive")
+            .arg("--tty")
+            .args(vec!["--workdir", self.work_dir.as_str()])
+            .arg("--network=host")
+            .args(
+                self.volumes
+                    .into_iter()
+                    .flat_map(|arg| {
+                        vec![
+                            "--volumes".to_string(),
+                            format!("{}:{}", arg.host_path, arg.container_path),
+                        ]
+                    })
+                    .collect::<Vec<_>>(),
             )
             .arg(self.image)
             .arg("nvim")
