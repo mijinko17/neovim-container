@@ -7,9 +7,17 @@ use std::{
 use crate::{cli::Args, path::PathUtils};
 
 pub fn run_container(args: Args<PathBuf>, dir_state_provider: impl DirectoryStateProvider) {
-    let cors: Vec<Box<dyn CreateNvimCommandExecutorCor>> = vec![Box::new(DirUnderHomeDirCor {
-        dir_state_provider: &dir_state_provider,
-    })];
+    let cors: Vec<Box<dyn CreateNvimCommandExecutorCor>> = vec![
+        Box::new(DirectoryCor {
+            dir_state_provider: &dir_state_provider,
+        }),
+        Box::new(DirUnderHomeDirCor {
+            dir_state_provider: &dir_state_provider,
+        }),
+        Box::new(DirNotUnderHomeDirCor {
+            dir_state_provider: &dir_state_provider,
+        }),
+    ];
     if let Some(executor) = cors.into_iter().find_map(|cor| cor.create(args.clone())) {
         executor.execute()
     }
@@ -119,6 +127,95 @@ where
             image: "mijinko17/neovim-container:latest",
             volumes: vec![
                 VolumeArg::new(home_dir.clone(), Path::new("/home/host")),
+                VolumeArg::new(
+                    home_dir.clone().join(Path::new(".gitconfig")),
+                    Path::new("/home/neovim/.gitconfig"),
+                ),
+                VolumeArg::new(
+                    home_dir.join(Path::new(".ssh")),
+                    Path::new("/home/neovim/.ssh"),
+                ),
+            ],
+            work_dir,
+            target_file_path: None as Option<PathBuf>,
+        })
+    }
+}
+
+struct DirNotUnderHomeDirCor<'a, T: DirectoryStateProvider> {
+    dir_state_provider: &'a T,
+}
+
+impl<'a, T> CreateNvimCommandExecutorCor for DirNotUnderHomeDirCor<'a, T>
+where
+    T: DirectoryStateProvider,
+{
+    fn create(&self, _args: Args<PathBuf>) -> Option<NvimCommandExecutor<PathBuf, PathBuf>> {
+        let home_dir = self.dir_state_provider.home_dir()?;
+        let current_dir = self.dir_state_provider.current_dir()?;
+        println!("{:?}", current_dir);
+        if home_dir.is_ancestor_of(&current_dir) {
+            None
+        } else {
+            let work_dir = Path::new("/home/host").to_path_buf();
+            Some(NvimCommandExecutor {
+                image: "mijinko17/neovim-container:latest",
+                volumes: vec![VolumeArg::new(current_dir, Path::new("/home/host"))],
+                work_dir,
+                target_file_path: None as Option<PathBuf>,
+            })
+        }
+    }
+}
+
+struct DirectoryCor<'a, T: DirectoryStateProvider> {
+    dir_state_provider: &'a T,
+}
+
+impl<'a, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, T>
+where
+    T: DirectoryStateProvider,
+{
+    fn create(&self, _args: Args<PathBuf>) -> Option<NvimCommandExecutor<PathBuf, PathBuf>> {
+        let home_dir = self.dir_state_provider.home_dir()?;
+        let current_dir = self.dir_state_provider.current_dir()?;
+        let work_dir = Path::new("/home/host").to_path_buf();
+        Some(NvimCommandExecutor {
+            image: "mijinko17/neovim-container:latest",
+            volumes: vec![
+                VolumeArg::new(current_dir, Path::new("/home/host")),
+                VolumeArg::new(
+                    home_dir.clone().join(Path::new(".gitconfig")),
+                    Path::new("/home/neovim/.gitconfig"),
+                ),
+                VolumeArg::new(
+                    home_dir.join(Path::new(".ssh")),
+                    Path::new("/home/neovim/.ssh"),
+                ),
+            ],
+            work_dir,
+            target_file_path: None as Option<PathBuf>,
+        })
+    }
+}
+
+struct FileCor<'a, T: DirectoryStateProvider> {
+    dir_state_provider: &'a T,
+}
+
+impl<'a, T> CreateNvimCommandExecutorCor for FileCor<'a, T>
+where
+    T: DirectoryStateProvider,
+{
+    fn create(&self, args: Args<PathBuf>) -> Option<NvimCommandExecutor<PathBuf, PathBuf>> {
+        let target = args.path?;
+        let home_dir = self.dir_state_provider.home_dir()?;
+        let current_dir = self.dir_state_provider.current_dir()?;
+        let work_dir = Path::new("/home/host").to_path_buf();
+        Some(NvimCommandExecutor {
+            image: "mijinko17/neovim-container:latest",
+            volumes: vec![
+                VolumeArg::new(current_dir, Path::new("/home/host")),
                 VolumeArg::new(
                     home_dir.clone().join(Path::new(".gitconfig")),
                     Path::new("/home/neovim/.gitconfig"),

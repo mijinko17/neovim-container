@@ -6,7 +6,7 @@ pub trait PathUtils<T>
 where
     T: AsRef<Path>,
 {
-    fn is_ancestor_of(&self, maybe_child: T) -> bool;
+    fn is_ancestor_of(&self, maybe_child: &T) -> bool;
     fn relative_path_from_ancsestor(&self, maybe_ancsestor: T) -> Option<PathBuf>;
 }
 
@@ -15,7 +15,7 @@ where
     T: AsRef<Path>,
     U: AsRef<Path>,
 {
-    fn is_ancestor_of(&self, maybe_child: T) -> bool {
+    fn is_ancestor_of(&self, maybe_child: &T) -> bool {
         let self_path_buf = self.as_ref();
         maybe_child
             .as_ref()
@@ -44,10 +44,10 @@ mod tests {
     fn another() {
         let a = Path::new("/home/yuki");
         let b: PathBuf = Path::new("/home/yuki/program").into();
-        assert!(a.is_ancestor_of(b));
+        assert!(a.is_ancestor_of(&b));
         let c: PathBuf = Path::new("/home/yuki").into();
         let d = Path::new("/home/hogem");
-        assert!(!c.is_ancestor_of(d));
+        assert!(!c.is_ancestor_of(&d));
     }
 
     #[test]
