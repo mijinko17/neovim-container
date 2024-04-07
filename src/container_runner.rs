@@ -103,7 +103,6 @@ impl OptionalArg for Command {
 }
 
 trait CreateNvimCommandExecutorCor {
-    // fn is_responsible(&self, args: Args<impl AsRef<Path>>) -> bool;
     fn create(&self, args: Args<PathBuf>) -> Option<NvimCommandExecutor<PathBuf, PathBuf>>;
 }
 
