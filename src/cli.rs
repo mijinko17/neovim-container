@@ -2,12 +2,13 @@ use std::path::{Path, PathBuf};
 
 use clap::Parser;
 
-/// Simple program to greet a person
+/// Run neovim inside docker container
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct RawArgs {
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long, default_value_t = false, hide = true)]
     develop: bool,
+    /// File path to be opened.
     path: Option<String>,
 }
 
