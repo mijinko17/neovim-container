@@ -43,6 +43,16 @@ impl VolumeArg {
             container_path: container_path.as_ref().to_path_buf(),
         }
     }
+    pub fn raw_volume_arg(self) -> Vec<String> {
+        vec![
+            "--volume".to_string(),
+            format!(
+                "{}:{}",
+                self.host_path.to_str().unwrap(),
+                self.container_path.to_str().unwrap()
+            ),
+        ]
+    }
 }
 
 struct NvimCommandExecutor<T: AsRef<Path>> {
@@ -66,16 +76,7 @@ where
             .args(
                 self.volumes
                     .into_iter()
-                    .flat_map(|arg| {
-                        vec![
-                            "--volume".to_string(),
-                            format!(
-                                "{}:{}",
-                                arg.host_path.to_str().unwrap(),
-                                arg.container_path.to_str().unwrap()
-                            ),
-                        ]
-                    })
+                    .flat_map(|arg| arg.raw_volume_arg())
                     .collect::<Vec<_>>(),
             )
             .arg(self.image)
