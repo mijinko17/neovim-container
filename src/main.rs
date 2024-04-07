@@ -9,17 +9,6 @@ use non_pure::DirectoryStateProviderImpl;
 use crate::cli::{Args, RawArgs};
 use crate::container_runner::run_container;
 
-// /// Simple program to greet a person
-// #[derive(Parser, Debug)]
-// #[command(author, version, about, long_about = None)]
-// struct Args {
-//     #[arg(short, long, default_value_t = false)]
-//     develop: bool,
-//     #[arg(short, long, default_value_t = 1)]
-//     count: u8,
-//     path: Option<String>,
-// }
-
 fn main() {
     // let path = Path::new("/home/vscode/hoge");
     // match unistd::mkfifo(path, stat::Mode::S_IRWXU) {

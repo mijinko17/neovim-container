@@ -11,6 +11,7 @@ pub struct RawArgs {
     path: Option<String>,
 }
 
+#[derive(Clone)]
 pub struct Args<T: AsRef<Path>> {
     pub develop: bool,
     pub path: Option<T>,
