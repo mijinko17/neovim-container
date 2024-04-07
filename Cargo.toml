@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 nix = { version = "0.28.0", features = ["fs", "process"] }
+dirs = "5.0.1"
+pathdiff = "0.2.1"
