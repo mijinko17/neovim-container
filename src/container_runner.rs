@@ -32,7 +32,12 @@ impl NvimCommandExecutor {
                     .arg("--tty")
                     .args(vec!["--workdir", self.work_dir.as_str()])
                     .arg("--network=host"),
-                |acc, cur| acc.args(vec![cur.host_path, cur.container_path]),
+                |acc, cur| {
+                    acc.args(vec![
+                        "--volumes",
+                        format!("{}:{}", cur.host_path, cur.container_path).as_str(),
+                    ])
+                },
             )
             .arg(self.image)
             .arg("nvim")
