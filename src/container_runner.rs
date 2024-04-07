@@ -1,10 +1,10 @@
-use std::process::Command;
+use std::{path::Path, process::Command};
 
 pub fn run_container() {
     NvimCommandExecutor {
         image: "mijinko17/neovim-container:latest",
         volumes: vec![],
-        work_dir: "/".to_string(),
+        work_dir: Path::new("/"),
     }
     .execute();
 }
@@ -14,20 +14,23 @@ struct VolumeArg {
     container_path: String,
 }
 
-struct NvimCommandExecutor {
+struct NvimCommandExecutor<T: AsRef<Path>> {
     image: &'static str,
     volumes: Vec<VolumeArg>,
-    work_dir: String,
+    work_dir: T,
 }
 
-impl NvimCommandExecutor {
+impl<T> NvimCommandExecutor<T>
+where
+    T: AsRef<Path>,
+{
     pub fn execute(self) {
         Command::new("docker")
             .arg("run")
             .arg("--rm")
             .arg("--interactive")
             .arg("--tty")
-            .args(vec!["--workdir", self.work_dir.as_str()])
+            .args(vec!["--workdir", self.work_dir.as_ref().to_str().unwrap()])
             .arg("--network=host")
             .args(
                 self.volumes
