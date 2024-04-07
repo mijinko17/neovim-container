@@ -3,8 +3,16 @@ use std::{
     process::Command,
 };
 
+use crate::path::PathUtils;
+
 pub fn run_container(dir_state_provider: impl DirectoryStateProvider) {
     let home_dir = dir_state_provider.home_dir().unwrap();
+    let current_dir = dir_state_provider.current_dir().unwrap();
+    let work_dir = Path::new("/home/host").join(
+        current_dir
+            .relative_path_from_ancsestor(home_dir.clone())
+            .unwrap(),
+    );
     NvimCommandExecutor {
         image: "mijinko17/neovim-container:latest",
         volumes: vec![
@@ -18,7 +26,7 @@ pub fn run_container(dir_state_provider: impl DirectoryStateProvider) {
                 Path::new("/home/neovim/.ssh"),
             ),
         ],
-        work_dir: Path::new("/"),
+        work_dir,
     }
     .execute();
 }
