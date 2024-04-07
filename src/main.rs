@@ -6,26 +6,41 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
+use clap::Parser;
 use nix::sys::stat;
 use nix::unistd::{self, getpid};
 use non_pure::DirectoryStateProviderImpl;
 
 use crate::container_runner::run_container;
 
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, default_value_t = false)]
+    develop: bool,
+    #[arg(short, long, default_value_t = 1)]
+    count: u8,
+    path: Option<String>,
+}
+
 fn main() {
-    let path = Path::new("/home/vscode/hoge");
-    match unistd::mkfifo(path, stat::Mode::S_IRWXU) {
-        Ok(_) => println!("created {:?}", path),
-        Err(err) => println!("Error creating fifo: {}", err),
-    }
-    print_pid("second");
-    std::thread::spawn(move || loop {
-        let mut file = fs::File::create(path).unwrap();
-        file.write_all(b"hogehoge").unwrap();
-        print_pid("spawned second");
-    });
-    run_container(DirectoryStateProviderImpl);
-    print_pid("contianer finished");
+    // let path = Path::new("/home/vscode/hoge");
+    // match unistd::mkfifo(path, stat::Mode::S_IRWXU) {
+    //     Ok(_) => println!("created {:?}", path),
+    //     Err(err) => println!("Error creating fifo: {}", err),
+    // }
+    // print_pid("second");
+    // std::thread::spawn(move || loop {
+    //     let mut file = fs::File::create(path).unwrap();
+    //     file.write_all(b"hogehoge").unwrap();
+    //     print_pid("spawned second");
+    // });
+    let args = Args::parse();
+    println!("develop: {}!", args.develop);
+    println!("hoge: {:?}!", args.path)
+    // run_container(DirectoryStateProviderImpl);
+    // print_pid("contianer finished");
 }
 
 fn print_pid(tag: &str) {
