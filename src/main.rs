@@ -1,4 +1,5 @@
 mod container_runner;
+mod non_pure;
 mod path;
 
 use std::fs;
@@ -7,6 +8,7 @@ use std::path::Path;
 
 use nix::sys::stat;
 use nix::unistd::{self, getpid};
+use non_pure::DirectoryStateProviderImpl;
 
 use crate::container_runner::run_container;
 
@@ -22,7 +24,7 @@ fn main() {
         file.write_all(b"hogehoge").unwrap();
         print_pid("spawned second");
     });
-    run_container();
+    run_container(DirectoryStateProviderImpl);
     print_pid("contianer finished");
 }
 
