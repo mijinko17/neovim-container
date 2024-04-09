@@ -5,7 +5,7 @@ use std::{
 };
 
 pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
-    pub image: &'static str,
+    pub image: String,
     pub volumes: Vec<VolumeArg>,
     pub work_dir: T,
     pub target_file_path: Option<U>,

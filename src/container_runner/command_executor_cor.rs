@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::{
     cli::Args,
     command_executor::{NvimCommandExecutor, VolumeArg},
+    container_config::{image_name, ContainerConfig},
     directory_state::DirectoryStateProvider,
 };
 
@@ -26,7 +27,10 @@ where
         let current_dir = self.dir_state_provider.current_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
         Some(NvimCommandExecutor {
-            image: "mijinko17/neovim-container:latest",
+            image: image_name(ContainerConfig {
+                uid: 1000,
+                develop: args.develop,
+            }),
             volumes: vec![
                 VolumeArg::new(current_dir, Path::new("/home/host")),
                 VolumeArg::new(
@@ -59,7 +63,10 @@ where
         let home_dir = self.dir_state_provider.home_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
         Some(NvimCommandExecutor {
-            image: "mijinko17/neovim-container:latest",
+            image: image_name(ContainerConfig {
+                uid: 1000,
+                develop: args.develop,
+            }),
             volumes: vec![
                 VolumeArg::new(parent_dir, Path::new("/home/host")),
                 VolumeArg::new(
