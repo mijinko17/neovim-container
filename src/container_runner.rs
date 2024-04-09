@@ -4,7 +4,7 @@ use std::{
     process::Command,
 };
 
-use crate::cli::Args;
+use crate::{cli::Args, directory_state::DirectoryStateProvider};
 
 pub fn run_container(args: Args<PathBuf>, dir_state_provider: impl DirectoryStateProvider) {
     let cors: Vec<Box<dyn CreateNvimCommandExecutorCor>> = vec![
@@ -80,12 +80,6 @@ where
             .wait()
             .unwrap();
     }
-}
-
-pub trait DirectoryStateProvider {
-    fn current_dir(&self) -> Option<PathBuf>;
-    fn home_dir(&self) -> Option<PathBuf>;
-    fn absolute_path(&self, relative_path: &impl AsRef<Path>) -> PathBuf;
 }
 
 pub trait OptionalArg {

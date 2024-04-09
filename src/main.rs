@@ -1,10 +1,10 @@
 mod cli;
 mod container_runner;
-mod non_pure;
+mod directory_state;
 mod path;
 
 use clap::Parser;
-use non_pure::DirectoryStateProviderImpl;
+use directory_state::DirectoryStateProviderImpl;
 
 use crate::cli::{Args, RawArgs};
 use crate::container_runner::run_container;
