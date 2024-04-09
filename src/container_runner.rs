@@ -67,8 +67,7 @@ where
             .args(
                 self.volumes
                     .into_iter()
-                    .flat_map(|arg| arg.raw_volume_arg())
-                    .collect::<Vec<_>>(),
+                    .flat_map(|arg| arg.raw_volume_arg()),
             )
             .arg(self.image)
             .arg("nvim")
