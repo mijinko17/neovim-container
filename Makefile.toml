@@ -22,7 +22,7 @@ dependencies = ["build_image", "build_rust"]
 category = "develop"
 description = "Run binary"
 script = ['''
-cargo run
+cargo run -- --develop
 ''']
 
 [tasks.build_and_run]
