@@ -1,14 +1,11 @@
-use crate::constants::NEOVIM_IMAGE_PREFIX;
-pub struct ContainerConfig {
+use crate::constants::{NEOVIM_IMAGE_PREFIX, NEOVIM_IMAGE_TAG};
+pub struct ContainerImageConfig {
     pub uid: u32,
-    pub develop: bool,
 }
 
-pub fn image_name(config: ContainerConfig) -> String {
+pub fn image_name(config: ContainerImageConfig) -> String {
     format!(
         "{}-uid-{}:{}",
-        NEOVIM_IMAGE_PREFIX,
-        config.uid,
-        if config.develop { "develop" } else { "latest" }
+        NEOVIM_IMAGE_PREFIX, config.uid, NEOVIM_IMAGE_TAG
     )
 }

@@ -11,7 +11,8 @@ script = [
 [tasks.build_rust]
 category = "develop"
 description = "Build rust"
-dependencies = ["build"]
+command = "cargo"
+args = ["build", "--features", "develop"]
 
 [tasks.build_all]
 category = "develop"
@@ -21,9 +22,8 @@ dependencies = ["build_image", "build_rust"]
 [tasks.run]
 category = "develop"
 description = "Run binary"
-script = ['''
-cargo run -- --develop
-''']
+command = "cargo"
+args = ["run", "--features", "develop"]
 
 [tasks.build_and_run]
 category = "develop"
