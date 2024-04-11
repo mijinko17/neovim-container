@@ -10,7 +10,9 @@ nix = { version = "0.28.0", features = ["fs", "process"] }
 dirs = "5.0.1"
 pathdiff = "0.2.1"
 clap = { version = "4.5.4", features = ["derive"] }
-self_update = { version = "0.39.0", features = ["rustls"] }
+self_update = { version = "0.39.0", default-features = false, features = [
+    "rustls",
+] }
 
 [features]
 default = []
