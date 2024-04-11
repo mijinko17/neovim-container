@@ -8,6 +8,7 @@ use clap::Parser;
 pub struct RawArgs {
     /// File path to be opened.
     path: Option<String>,
+    /// Update binary.
     #[arg(short, long)]
     update: bool,
 }
