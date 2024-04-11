@@ -8,17 +8,21 @@ use clap::Parser;
 pub struct RawArgs {
     /// File path to be opened.
     path: Option<String>,
+    #[arg(short, long)]
+    update: bool,
 }
 
 #[derive(Clone)]
 pub struct Args<T: AsRef<Path>> {
     pub path: Option<T>,
+    pub update: bool,
 }
 
 impl From<RawArgs> for Args<PathBuf> {
     fn from(value: RawArgs) -> Self {
         Args {
             path: value.path.map(|p| Path::new(p.as_str()).to_path_buf()),
+            update: value.update,
         }
     }
 }

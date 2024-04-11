@@ -5,9 +5,11 @@ mod container_config;
 mod container_runner;
 mod directory_state;
 mod path;
+mod update_binary;
 
 use clap::Parser;
 use directory_state::DirectoryStateProviderImpl;
+use update_binary::update_binary;
 
 use crate::cli::{Args, RawArgs};
 use crate::container_runner::run_container;
@@ -25,5 +27,9 @@ fn main() {
     //     print_pid("spawned second");
     // });
     let args = Args::from(RawArgs::parse());
-    run_container(args, DirectoryStateProviderImpl);
+    if args.update {
+        update_binary().expect("Failed to update binary.")
+    } else {
+        run_container(args, DirectoryStateProviderImpl)
+    }
 }
