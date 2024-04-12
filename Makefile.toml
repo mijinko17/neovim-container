@@ -29,3 +29,26 @@ args = ["run", "--features", "develop"]
 category = "develop"
 description = "Run binary"
 dependencies = ["build_image", "run"]
+
+[tasks.format_check]
+description = "Check code format."
+category = "develop"
+command = "cargo"
+args = ["fmt", "--check"]
+
+[tasks.lint]
+description = "Run linter"
+category = "develop"
+command = "cargo"
+args = ["check"]
+
+[tasks.test]
+description = "Run all tests."
+category = "develop"
+command = "cargo"
+args = ["test"]
+
+[tasks.ci]
+description = "ci"
+category = "develop"
+dependencies = ["format_check", "lint", "test"]
