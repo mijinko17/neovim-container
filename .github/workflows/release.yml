@@ -51,6 +51,12 @@ jobs:
               use-cross: false,
               extension: "",
             }
+          - {
+              os: windows-latest,
+              target: x86_64-pc-windows-msvc,
+              use-cross: false,
+              extension: .exe,
+            }
     steps:
       - name: Checkout
         uses: actions/checkout@v2
