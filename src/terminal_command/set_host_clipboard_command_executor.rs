@@ -1,0 +1,24 @@
+use std::process::{Command, Stdio};
+
+use anyhow::Result;
+
+pub struct SetHostClipboardCommandExecutor {
+    content: String,
+}
+
+impl SetHostClipboardCommandExecutor {
+    pub fn new(content: String) -> Self {
+        Self { content }
+    }
+    pub fn execute(self) -> Result<()> {
+        let echo = Command::new("echo")
+            .arg(self.content)
+            .stdout(Stdio::piped())
+            .spawn()?;
+        Command::new("clip.exe")
+            .stdin(Stdio::from(echo.stdout.unwrap()))
+            .stdout(Stdio::piped())
+            .spawn()?;
+        Ok(())
+    }
+}

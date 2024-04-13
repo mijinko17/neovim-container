@@ -4,7 +4,10 @@ use anyhow::{Context, Result};
 
 use crate::{
     cli::Args,
-    clipboard::from_host::clipboard_named_pipe_path,
+    clipboard::{
+        from_container::clipboard_named_pipe_from_container_path,
+        from_host::clipboard_named_pipe_from_host_path,
+    },
     command_executor::{NvimCommandExecutor, VolumeArg},
     container_config::{image_name, ContainerImageConfig},
     directory_state::DirectoryStateProvider,
@@ -43,8 +46,12 @@ where
                     Path::new("/home/neovim/.ssh"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_host_path(self.dir_state_provider)?,
                     Path::new("/home/neovim/pipes/clipboard"),
+                ),
+                VolumeArg::new(
+                    clipboard_named_pipe_from_container_path(self.dir_state_provider)?,
+                    Path::new("/home/neovim/pipes/from_container"),
                 ),
             ],
             work_dir,
@@ -87,8 +94,12 @@ where
                     Path::new("/home/neovim/.ssh"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_host_path(self.dir_state_provider)?,
                     Path::new("/home/neovim/pipes/clipboard"),
+                ),
+                VolumeArg::new(
+                    clipboard_named_pipe_from_container_path(self.dir_state_provider)?,
+                    Path::new("/home/neovim/pipes/from_container"),
                 ),
             ],
             work_dir,
