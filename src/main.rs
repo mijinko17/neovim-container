@@ -1,4 +1,5 @@
 mod cli;
+mod clipboard;
 mod command_executor;
 mod constants;
 mod container_config;
@@ -9,6 +10,7 @@ mod update_binary;
 
 use anyhow::Result;
 use clap::Parser;
+use clipboard::setup_clipboard;
 use directory_state::DirectoryStateProviderImpl;
 use update_binary::update_binary;
 
@@ -31,6 +33,7 @@ fn main() -> Result<()> {
     if args.update {
         update_binary()
     } else {
+        setup_clipboard(&DirectoryStateProviderImpl)?;
         run_container(args, DirectoryStateProviderImpl)
     }
 }
