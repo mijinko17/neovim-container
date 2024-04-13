@@ -4,6 +4,8 @@ use std::{
     process::Command,
 };
 
+use anyhow::Result;
+
 pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
     pub image: String,
     pub volumes: Vec<VolumeArg>,
@@ -16,7 +18,7 @@ where
     T: AsRef<Path>,
     U: AsRef<Path>,
 {
-    pub fn execute(self) {
+    pub fn execute(self) -> Result<()> {
         Command::new("docker")
             .arg("run")
             .arg("--rm")
@@ -35,10 +37,9 @@ where
                 self.target_file_path
                     .and_then(move |p| p.as_ref().to_str().map(|s| s.to_string())),
             )
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap();
+            .spawn()?
+            .wait()?;
+        Ok(())
     }
 }
 

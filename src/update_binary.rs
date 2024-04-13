@@ -1,6 +1,7 @@
+use anyhow::Result;
 use self_update::cargo_crate_version;
 
-pub fn update_binary() -> Result<(), Box<dyn (::std::error::Error)>> {
+pub fn update_binary() -> Result<()> {
     let _ = self_update::backends::github::Update::configure()
         .repo_owner("mijinko17")
         .repo_name("neovim-container")

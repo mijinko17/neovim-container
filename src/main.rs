@@ -7,6 +7,7 @@ mod directory_state;
 mod path;
 mod update_binary;
 
+use anyhow::Result;
 use clap::Parser;
 use directory_state::DirectoryStateProviderImpl;
 use update_binary::update_binary;
@@ -14,7 +15,7 @@ use update_binary::update_binary;
 use crate::cli::{Args, RawArgs};
 use crate::container_runner::run_container;
 
-fn main() {
+fn main() -> Result<()> {
     // let path = Path::new("/home/vscode/hoge");
     // match unistd::mkfifo(path, stat::Mode::S_IRWXU) {
     //     Ok(_) => println!("created {:?}", path),
@@ -28,7 +29,7 @@ fn main() {
     // });
     let args = Args::from(RawArgs::parse());
     if args.update {
-        update_binary().expect("Failed to update binary.")
+        update_binary()
     } else {
         run_container(args, DirectoryStateProviderImpl)
     }

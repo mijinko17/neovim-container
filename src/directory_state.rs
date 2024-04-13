@@ -3,26 +3,27 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::{Context, Result};
 use dirs::home_dir;
 
 pub trait DirectoryStateProvider {
-    fn current_dir(&self) -> Option<PathBuf>;
-    fn home_dir(&self) -> Option<PathBuf>;
-    fn absolute_path(&self, relative_path: &impl AsRef<Path>) -> PathBuf;
+    fn current_dir(&self) -> Result<PathBuf>;
+    fn home_dir(&self) -> Result<PathBuf>;
+    fn absolute_path(&self, relative_path: &impl AsRef<Path>) -> Result<PathBuf>;
 }
 
 pub struct DirectoryStateProviderImpl;
 
 impl DirectoryStateProvider for DirectoryStateProviderImpl {
-    fn current_dir(&self) -> Option<PathBuf> {
-        current_dir().ok()
+    fn current_dir(&self) -> Result<PathBuf> {
+        Ok(current_dir()?)
     }
 
-    fn home_dir(&self) -> Option<PathBuf> {
-        home_dir()
+    fn home_dir(&self) -> Result<PathBuf> {
+        home_dir().context("Failed to get home directory.")
     }
 
-    fn absolute_path(&self, relative_path: &impl AsRef<std::path::Path>) -> PathBuf {
-        std::fs::canonicalize(relative_path).unwrap()
+    fn absolute_path(&self, relative_path: &impl AsRef<std::path::Path>) -> Result<PathBuf> {
+        Ok(std::fs::canonicalize(relative_path)?)
     }
 }

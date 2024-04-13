@@ -2,11 +2,16 @@ mod command_executor_cor;
 
 use std::path::PathBuf;
 
+use anyhow::{bail, Result};
+
 use crate::{cli::Args, directory_state::DirectoryStateProvider};
 
 use self::command_executor_cor::{CreateNvimCommandExecutorCor, DirectoryCor, FileCor};
 
-pub fn run_container(args: Args<PathBuf>, dir_state_provider: impl DirectoryStateProvider) {
+pub fn run_container(
+    args: Args<PathBuf>,
+    dir_state_provider: impl DirectoryStateProvider,
+) -> Result<()> {
     let cors: Vec<Box<dyn CreateNvimCommandExecutorCor>> = vec![
         Box::new(DirectoryCor {
             dir_state_provider: &dir_state_provider,
@@ -15,7 +20,12 @@ pub fn run_container(args: Args<PathBuf>, dir_state_provider: impl DirectoryStat
             dir_state_provider: &dir_state_provider,
         }),
     ];
-    if let Some(executor) = cors.into_iter().find_map(|cor| cor.create(args.clone())) {
+    if let Some(executor) = cors
+        .into_iter()
+        .find_map(|cor| cor.create(args.clone()).ok())
+    {
         executor.execute()
+    } else {
+        bail!("No method was matched.")
     }
 }
