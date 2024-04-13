@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::directory_state::DirectoryStateProvider;
+use crate::{
+    directory_state::DirectoryStateProvider,
+    terminal_command::get_clipboard_win::GetWindowsClipboardCommandExecutor,
+};
 
 pub fn setup_clipboard_from_host(dir_state: &'static impl DirectoryStateProvider) -> Result<()> {
     let _ = create_named_pipes(dir_state);
@@ -20,7 +23,7 @@ fn listen_and_send_clipboard_from_host(
     let path = clipboard_named_pipe_path(dir_state)?;
     std::thread::spawn(move || loop {
         let _ = dir_state.file_content(&path).unwrap();
-        let _ = dir_state.write_file(&path, clipboard_content().unwrap());
+        let _ = dir_state.write_file(&path, clipboard_content().unwrap().as_ref());
     });
     Ok(())
 }
@@ -35,6 +38,10 @@ fn clipboard_named_pipe_dir_path(dir_state: &impl DirectoryStateProvider) -> Res
     Ok(path)
 }
 
-fn clipboard_content() -> Result<&'static [u8]> {
-    Ok("hogehoge".as_bytes())
+fn clipboard_content() -> Result<Vec<u8>> {
+    let a = GetWindowsClipboardCommandExecutor
+        .execute()?
+        .as_bytes()
+        .to_vec();
+    Ok(a)
 }

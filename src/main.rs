@@ -6,6 +6,7 @@ mod container_config;
 mod container_runner;
 mod directory_state;
 mod path;
+mod terminal_command;
 mod update_binary;
 
 use anyhow::Result;
