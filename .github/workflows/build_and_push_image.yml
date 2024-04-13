@@ -28,7 +28,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: image
           push: true
           network: host
           tags: mijinko17/neovim-container-uid-1000:latest

@@ -4,7 +4,7 @@ description = "Build neovim-container image"
 script = [
     '''
     uid=$(id -u "$(whoami)")
-    docker build -t mijinko17/neovim-container-uid-"$uid":develop --network host --build-arg uid="$uid" .
+    docker build -t mijinko17/neovim-container-uid-"$uid":develop --network host --build-arg uid="$uid" image
     ''',
 ]
 

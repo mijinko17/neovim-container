@@ -20,7 +20,7 @@ RUN userdel node && \
 USER $user
 
 COPY --chown=$user .config/ /home/$user/.config
-COPY --chmod=0755 --chown=$user paste.sh /home/$user/bin/paste.sh
+COPY --chmod=0755 --chown=$user scripts/paste.sh /home/$user/bin/paste.sh
 ENV PATH $PATH:/home/$user/bin
 
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
