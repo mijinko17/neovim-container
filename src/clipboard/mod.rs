@@ -1,4 +1,4 @@
-mod from_host;
+pub mod from_host;
 
 use anyhow::Result;
 

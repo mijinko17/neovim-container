@@ -28,7 +28,7 @@ fn listen_and_send_clipboard_from_host(
     Ok(())
 }
 
-fn clipboard_named_pipe_path(dir_state: &impl DirectoryStateProvider) -> Result<PathBuf> {
+pub fn clipboard_named_pipe_path(dir_state: &impl DirectoryStateProvider) -> Result<PathBuf> {
     let path = clipboard_named_pipe_dir_path(dir_state)?.join("clipboard");
     Ok(path)
 }
