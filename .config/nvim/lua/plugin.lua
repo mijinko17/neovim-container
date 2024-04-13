@@ -9,6 +9,19 @@ local ensure_packer = function()
   return false
 end
 
+vim.g.clipboard = {
+  name = 'tmux',
+  copy = {
+    ["+"] = "copy.sh",
+    ["*"] = "copy.sh",
+  },
+  paste = {
+    ["+"] = { 'paste.sh' },
+    ["*"] = { 'paste.sh' },
+  },
+  cache_enabled = false,
+}
+
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
@@ -111,23 +124,6 @@ return require('packer').startup(function(use)
     'kristijanhusak/vim-hybrid-material',
     config = function()
       vim.cmd 'colorscheme hybrid_material'
-    end,
-  }
-  use {
-    'ojroques/nvim-osc52',
-    config = function()
-      local function copy(lines, _)
-        require('osc52').copy(table.concat(lines, '\n'))
-      end
-
-      local function paste()
-        return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') }
-      end
-      vim.g.clipboard = {
-        name = 'osc52',
-        copy = { ['+'] = copy, ['*'] = copy },
-        paste = { ['+'] = paste, ['*'] = paste },
-      }
     end,
   }
   use({
