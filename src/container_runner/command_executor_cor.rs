@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 
 use crate::{
     cli::Args,
@@ -10,6 +10,7 @@ use crate::{
 };
 
 pub trait CreateNvimCommandExecutorCor {
+    fn is_responsible(&self, args: &Args<PathBuf>) -> bool;
     fn create(&self, args: Args<PathBuf>) -> Result<NvimCommandExecutor<PathBuf, PathBuf>>;
 }
 
@@ -21,10 +22,10 @@ impl<'a, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
-    fn create(&self, args: Args<PathBuf>) -> Result<NvimCommandExecutor<PathBuf, PathBuf>> {
-        if args.path.is_some() {
-            bail!("Target path is specified, so not resonsible.");
-        }
+    fn is_responsible(&self, args: &Args<PathBuf>) -> bool {
+        args.path.is_none()
+    }
+    fn create(&self, _args: Args<PathBuf>) -> Result<NvimCommandExecutor<PathBuf, PathBuf>> {
         let home_dir = self.dir_state_provider.home_dir()?;
         let current_dir = self.dir_state_provider.current_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
@@ -55,6 +56,9 @@ impl<'a, T> CreateNvimCommandExecutorCor for FileCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
+    fn is_responsible(&self, args: &Args<PathBuf>) -> bool {
+        args.path.is_some()
+    }
     fn create(&self, args: Args<PathBuf>) -> Result<NvimCommandExecutor<PathBuf, PathBuf>> {
         let target = self
             .dir_state_provider

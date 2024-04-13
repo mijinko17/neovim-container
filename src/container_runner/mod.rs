@@ -20,12 +20,9 @@ pub fn run_container(
             dir_state_provider: &dir_state_provider,
         }),
     ];
-    if let Some(executor) = cors
-        .into_iter()
-        .find_map(|cor| cor.create(args.clone()).ok())
-    {
-        executor.execute()
+    if let Some(executor) = cors.into_iter().find(|cor| cor.is_responsible(&args)) {
+        executor.create(args)?.execute()
     } else {
-        bail!("No method was matched.")
+        bail!("No method was found.")
     }
 }
