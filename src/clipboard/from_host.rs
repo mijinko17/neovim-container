@@ -41,8 +41,8 @@ pub fn clipboard_named_pipe_from_host_path(
     dir_state: &impl DirectoryStateProvider,
     container_name: &str,
 ) -> Result<PathBuf> {
-    let path =
-        clipboard_named_pipe_dir_path(dir_state)?.join(format!("clipboard_from_host_{}", container_name));
+    let path = clipboard_named_pipe_dir_path(dir_state)?
+        .join(format!("clipboard_from_host_{}", container_name));
     Ok(path)
 }
 

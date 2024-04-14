@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::directory_state::{self, DirectoryStateProvider};
+use crate::directory_state::DirectoryStateProvider;
 
 use self::{
     from_container::{clipboard_named_pipe_from_container_path, setup_clipboard_from_container},
