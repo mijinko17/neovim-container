@@ -18,11 +18,12 @@ pub trait CreateNvimCommandExecutorCor {
     fn create(&self, args: Args<PathBuf>) -> Result<NvimCommandExecutor<PathBuf, PathBuf>>;
 }
 
-pub struct DirectoryCor<'a, T: DirectoryStateProvider> {
+pub struct DirectoryCor<'a, 'b, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
+    pub container_name: &'b str,
 }
 
-impl<'a, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, T>
+impl<'a, 'b, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, 'b, T>
 where
     T: DirectoryStateProvider,
 {
@@ -46,7 +47,10 @@ where
                     Path::new("/home/neovim/.ssh"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_from_host_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_host_path(
+                        self.dir_state_provider,
+                        self.container_name,
+                    )?,
                     Path::new("/home/neovim/pipes/clipboard"),
                 ),
                 VolumeArg::new(
@@ -60,11 +64,12 @@ where
     }
 }
 
-pub struct FileCor<'a, T: DirectoryStateProvider> {
+pub struct FileCor<'a, 'b, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
+    pub container_name: &'b str,
 }
 
-impl<'a, T> CreateNvimCommandExecutorCor for FileCor<'a, T>
+impl<'a, 'b, T> CreateNvimCommandExecutorCor for FileCor<'a, 'b, T>
 where
     T: DirectoryStateProvider,
 {
@@ -94,7 +99,10 @@ where
                     Path::new("/home/neovim/.ssh"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_from_host_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_host_path(
+                        self.dir_state_provider,
+                        self.container_name,
+                    )?,
                     Path::new("/home/neovim/pipes/clipboard"),
                 ),
                 VolumeArg::new(
