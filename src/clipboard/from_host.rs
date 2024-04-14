@@ -42,7 +42,7 @@ pub fn clipboard_named_pipe_from_host_path(
     container_name: &str,
 ) -> Result<PathBuf> {
     let path =
-        clipboard_named_pipe_dir_path(dir_state)?.join(format!("clipboard_{}", container_name));
+        clipboard_named_pipe_dir_path(dir_state)?.join(format!("clipboard_from_host_{}", container_name));
     Ok(path)
 }
 

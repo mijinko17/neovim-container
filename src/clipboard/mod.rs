@@ -14,7 +14,7 @@ pub fn setup_clipboard(
     container_name: &str,
 ) -> Result<()> {
     setup_clipboard_from_host(dir_state, container_name)?;
-    setup_clipboard_from_container(dir_state)
+    setup_clipboard_from_container(dir_state, container_name)
 }
 
 fn clipboard_named_pipe_dir_path(dir_state: &impl DirectoryStateProvider) -> Result<PathBuf> {

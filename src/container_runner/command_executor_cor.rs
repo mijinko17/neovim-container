@@ -54,7 +54,10 @@ where
                     Path::new("/home/neovim/pipes/clipboard"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_from_container_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_container_path(
+                        self.dir_state_provider,
+                        self.container_name,
+                    )?,
                     Path::new("/home/neovim/pipes/from_container"),
                 ),
             ],
@@ -106,7 +109,7 @@ where
                     Path::new("/home/neovim/pipes/clipboard"),
                 ),
                 VolumeArg::new(
-                    clipboard_named_pipe_from_container_path(self.dir_state_provider)?,
+                    clipboard_named_pipe_from_container_path(self.dir_state_provider,self.container_name)?,
                     Path::new("/home/neovim/pipes/from_container"),
                 ),
             ],
