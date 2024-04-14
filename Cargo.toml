@@ -14,6 +14,8 @@ self_update = { version = "0.39.0", default-features = false, features = [
     "rustls",
 ] }
 anyhow = "1.0.82"
+rand = { version = "0.8.5", features = ["std_rng"] }
+# rand = "0.8.5"
 
 [features]
 default = []

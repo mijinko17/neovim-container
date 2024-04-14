@@ -13,6 +13,7 @@ use anyhow::Result;
 use clap::Parser;
 use clipboard::{clean_named_pipe, setup_clipboard};
 use directory_state::DirectoryStateProviderImpl;
+use rand::random;
 use update_binary::update_binary;
 
 use crate::cli::{Args, RawArgs};
@@ -32,5 +33,11 @@ fn main() -> Result<()> {
 }
 
 fn random_contaniner_name() -> String {
-    "hoge".to_string()
+    let (w, x, y, z): (u8, u8, u8, u8) = (
+        random::<u8>(),
+        random::<u8>(),
+        random::<u8>(),
+        random::<u8>(),
+    );
+    format!("neovim-{w:0>2x}{x:0>2x}{y:0>2x}{z:0>2x}")
 }
