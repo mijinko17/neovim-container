@@ -1,5 +1,4 @@
 #!/bin/bash
 
-echo paste >~/pipes/clipboard
+printf paste >~/pipes/clipboard
 cat ~/pipes/clipboard
-

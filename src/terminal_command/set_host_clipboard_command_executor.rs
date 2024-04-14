@@ -11,7 +11,7 @@ impl SetHostClipboardCommandExecutor {
         Self { content }
     }
     pub fn execute(self) -> Result<()> {
-        let echo = Command::new("echo")
+        let echo = Command::new("printf")
             .arg(self.content)
             .stdout(Stdio::piped())
             .spawn()?;

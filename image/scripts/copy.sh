@@ -1,3 +1,3 @@
 #!/bin/bash
 
-read -rd '' s; echo "$s" >~/pipes/from_container
+read -rd '' s; printf "$s" >~/pipes/from_container
