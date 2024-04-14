@@ -15,8 +15,14 @@ impl SetHostClipboardCommandExecutor {
             .arg(self.content)
             .stdout(Stdio::piped())
             .spawn()?;
-        Command::new("clip.exe")
+        let iconv = Command::new("iconv")
+            .arg("-t")
+            .arg("utf16")
             .stdin(Stdio::from(echo.stdout.unwrap()))
+            .stdout(Stdio::piped())
+            .spawn()?;
+        Command::new("clip.exe")
+            .stdin(Stdio::from(iconv.stdout.unwrap()))
             .stdout(Stdio::piped())
             .spawn()?;
         Ok(())
