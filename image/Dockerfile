@@ -26,4 +26,4 @@ COPY --chmod=0755 --chown=$user scripts/paste.sh /home/$user/bin/paste.sh
 ENV PATH $PATH:/home/$user/bin
 
 RUN nvim --headless -c 'Lazy install' -c qall
-# RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
+RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
