@@ -11,7 +11,7 @@ mod update_binary;
 
 use anyhow::Result;
 use clap::Parser;
-use clipboard::setup_clipboard;
+use clipboard::{clean_named_pipe, setup_clipboard};
 use directory_state::DirectoryStateProviderImpl;
 use update_binary::update_binary;
 
@@ -24,8 +24,10 @@ fn main() -> Result<()> {
         update_binary()
     } else {
         let container_name = random_contaniner_name();
-        setup_clipboard(&DirectoryStateProviderImpl, &container_name)?;
-        run_container(args, DirectoryStateProviderImpl, &container_name)
+        let result = setup_clipboard(&DirectoryStateProviderImpl, &container_name)
+            .and_then(|_| run_container(args, DirectoryStateProviderImpl, &container_name));
+        let _ = clean_named_pipe(&DirectoryStateProviderImpl, &container_name);
+        result
     }
 }
 

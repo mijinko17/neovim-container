@@ -17,6 +17,7 @@ pub trait DirectoryStateProvider: Sync {
     fn create_directory(&self, path: &impl AsRef<Path>) -> Result<()>;
     fn file_content(&self, path: &impl AsRef<Path>) -> Result<String>;
     fn write_file(&self, path: &impl AsRef<Path>, content: &[u8]) -> Result<()>;
+    fn remove_file(&self, path: &impl AsRef<Path>) -> Result<()>;
 }
 
 pub struct DirectoryStateProviderImpl;
@@ -49,5 +50,9 @@ impl DirectoryStateProvider for DirectoryStateProviderImpl {
     fn write_file(&self, path: &impl AsRef<Path>, content: &[u8]) -> Result<()> {
         let mut file = fs::File::create(path)?;
         Ok(file.write_all(content)?)
+    }
+
+    fn remove_file(&self, path: &impl AsRef<Path>) -> Result<()> {
+        Ok(std::fs::remove_file(path)?)
     }
 }
