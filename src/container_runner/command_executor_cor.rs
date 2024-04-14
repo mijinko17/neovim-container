@@ -36,6 +36,7 @@ where
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
             image: image_name(ContainerImageConfig { uid: 1000 }),
+            container_name: self.container_name.to_string(),
             volumes: vec![
                 VolumeArg::new(current_dir, Path::new("/home/host")),
                 VolumeArg::new(
@@ -91,6 +92,7 @@ where
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
             image: image_name(ContainerImageConfig { uid: 1000 }),
+            container_name: self.container_name.to_string(),
             volumes: vec![
                 VolumeArg::new(parent_dir, Path::new("/home/host")),
                 VolumeArg::new(

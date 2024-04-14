@@ -8,6 +8,7 @@ use anyhow::Result;
 
 pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
     pub image: String,
+    pub container_name: String,
     pub volumes: Vec<VolumeArg>,
     pub work_dir: T,
     pub target_file_path: Option<U>,
@@ -21,6 +22,8 @@ where
     pub fn execute(self) -> Result<()> {
         Command::new("docker")
             .arg("run")
+            .arg("--name")
+            .arg(self.container_name)
             .arg("--rm")
             .arg("--interactive")
             .arg("--tty")
