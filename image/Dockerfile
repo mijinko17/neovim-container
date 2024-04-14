@@ -4,7 +4,8 @@ RUN apt-get update && \
     apt-get install git -y && \
     apt-get install curl -y  && \
     apt-get install ripgrep -y && \
-    apt-get install xz-utils -y
+    apt-get install xz-utils -y && \
+    apt-get clean
 
 WORKDIR /neovim
 RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage && \
