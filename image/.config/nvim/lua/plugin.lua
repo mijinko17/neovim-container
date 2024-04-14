@@ -9,19 +9,6 @@ local ensure_packer = function()
   return false
 end
 
-vim.g.clipboard = {
-  name = 'tmux',
-  copy = {
-    ["+"] = "copy.sh",
-    ["*"] = "copy.sh",
-  },
-  paste = {
-    ["+"] = { 'paste.sh' },
-    ["*"] = { 'paste.sh' },
-  },
-  cache_enabled = false,
-}
-
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)

@@ -1,3 +1,5 @@
 require('core')
 require('plugin')
+require('clipboard')
 require('filetype')
+require('terminal')

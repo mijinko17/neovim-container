@@ -26,4 +26,3 @@ ENV PATH $PATH:/home/$user/bin
 
 RUN nvim --headless -c 'autocmd User PackerComplete quitall'
 RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
-
