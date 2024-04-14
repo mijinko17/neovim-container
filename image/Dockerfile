@@ -25,5 +25,5 @@ COPY --chmod=0755 --chown=$user scripts/copy.sh /home/$user/bin/copy.sh
 COPY --chmod=0755 --chown=$user scripts/paste.sh /home/$user/bin/paste.sh
 ENV PATH $PATH:/home/$user/bin
 
-RUN nvim --headless -c 'autocmd User PackerComplete quitall'
-RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
+# RUN nvim --headless -c 'autocmd User PackerComplete quitall'
+# RUN nvim --headless -c 'MasonInstall lua-language-server shellcheck shfmt' -c qall
