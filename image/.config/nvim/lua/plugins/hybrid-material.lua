@@ -4,4 +4,3 @@ return {
     vim.cmd 'colorscheme hybrid_material'
   end,
 }
-
