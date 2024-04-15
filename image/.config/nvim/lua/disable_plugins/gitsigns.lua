@@ -46,4 +46,3 @@ return {
     vim.keymap.set({ 'n' }, '<leader>vr', function() gitsigns.reset_hunk() end, {})
   end
 }
-
