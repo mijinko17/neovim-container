@@ -61,6 +61,10 @@ where
                     )?,
                     Path::new("/home/neovim/pipes/from_container"),
                 ),
+                VolumeArg::new(
+                    self.dir_state_provider.home_dir()?.join("zettelkasten"),
+                    Path::new("/home/neovim/zettelkasten"),
+                ),
             ],
             work_dir,
             target_file_path: None as Option<PathBuf>,
@@ -116,6 +120,10 @@ where
                         self.container_name,
                     )?,
                     Path::new("/home/neovim/pipes/from_container"),
+                ),
+                VolumeArg::new(
+                    self.dir_state_provider.home_dir()?.join("zettelkasten"),
+                    Path::new("/home/neovim/zettelkasten"),
                 ),
             ],
             work_dir,
