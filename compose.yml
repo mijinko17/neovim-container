@@ -1,0 +1,13 @@
+services:
+  default:
+    image: mijinko17/neovim-container-uid-1000:latest
+    volumes:
+      - ~/zettelkasten:/home/neovim/zettelkasten
+      - ~/.ssh:/home/neovim/.ssh
+      - ~/.gitconfig:/home/neovim/.gitconfig
+  develop:
+    image: mijinko17/neovim-container-uid-1000:latest
+    volumes:
+      - ~/zettelkasten:/home/neovim/zettelkasten
+      - ~/.ssh:/home/neovim/.ssh
+      - ~/.gitconfig:/home/neovim/.gitconfig

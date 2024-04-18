@@ -1,0 +1,11 @@
+services:
+  default:
+    tty: true
+    stdin_open: true
+    network_mode: host
+    working_dir: /home/host
+  develop:
+    tty: true
+    stdin_open: true
+    network_mode: host
+    working_dir: /home/host
