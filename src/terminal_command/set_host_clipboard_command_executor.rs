@@ -17,7 +17,7 @@ impl SetHostClipboardCommandExecutor {
             .spawn()?;
         let iconv = Command::new("iconv")
             .arg("-t")
-            .arg("utf8")
+            .arg("cp932")
             .stdin(Stdio::from(echo.stdout.unwrap()))
             .stdout(Stdio::piped())
             .spawn()?;
