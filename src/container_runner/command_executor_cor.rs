@@ -9,6 +9,7 @@ use crate::{
         from_host::clipboard_named_pipe_from_host_path,
     },
     command_executor::{NvimCommandExecutor, VolumeArg},
+    constants::UID,
     container_config::{image_name, ContainerImageConfig},
     directory_state::DirectoryStateProvider,
 };
@@ -35,7 +36,7 @@ where
         let current_dir = self.dir_state_provider.current_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
-            image: image_name(ContainerImageConfig { uid: 1000 }),
+            image: image_name(ContainerImageConfig { uid: UID }),
             container_name: self.container_name.to_string(),
             volumes: vec![
                 VolumeArg::new(current_dir, Path::new("/home/host")),
@@ -95,7 +96,7 @@ where
         let home_dir = self.dir_state_provider.home_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
-            image: image_name(ContainerImageConfig { uid: 1000 }),
+            image: image_name(ContainerImageConfig { uid: UID }),
             container_name: self.container_name.to_string(),
             volumes: vec![
                 VolumeArg::new(parent_dir, Path::new("/home/host")),

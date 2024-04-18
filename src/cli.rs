@@ -11,12 +11,16 @@ pub struct RawArgs {
     /// Update binary.
     #[arg(short, long)]
     update: bool,
+    /// Pull image.
+    #[arg(short, long)]
+    pull: bool,
 }
 
 #[derive(Clone)]
 pub struct Args<T: AsRef<Path>> {
     pub path: Option<T>,
     pub update: bool,
+    pub pull: bool,
 }
 
 impl From<RawArgs> for Args<PathBuf> {
@@ -24,6 +28,7 @@ impl From<RawArgs> for Args<PathBuf> {
         Args {
             path: value.path.map(|p| Path::new(p.as_str()).to_path_buf()),
             update: value.update,
+            pull: value.pull,
         }
     }
 }
