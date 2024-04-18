@@ -15,7 +15,8 @@ self_update = { version = "0.39.0", default-features = false, features = [
 ] }
 anyhow = "1.0.82"
 rand = { version = "0.8.5", features = ["std_rng"] }
-# rand = "0.8.5"
+serde = { version ="1.0.198", features = ["derive"] }
+serde_yaml = "0.9.34"
 
 [features]
 default = []
