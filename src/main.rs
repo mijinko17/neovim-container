@@ -19,14 +19,10 @@ use anyhow::Result;
 use clap::Parser;
 use constants::UID;
 use container_config::{image_name, ContainerImageConfig};
-use directory_state::DirectoryStateProviderImpl;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    cli::{Args, RawArgs},
-    config_reader::{ConfigReader, ConfigReaderImpl},
-};
+use crate::cli::{Args, RawArgs};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Service {
@@ -40,9 +36,6 @@ struct Compose {
 }
 
 fn main() -> Result<()> {
-    let config = ConfigReaderImpl::new(DirectoryStateProviderImpl).config("default")?;
-    println!("{}", config.image);
-    println!("{:?}", config.volumes);
     let args = Args::from(RawArgs::parse());
     if args.update {
         update_binary()

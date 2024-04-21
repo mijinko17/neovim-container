@@ -4,12 +4,18 @@ use std::path::PathBuf;
 
 use anyhow::{bail, Result};
 
-use crate::{cli::Args, directory_state::DirectoryStateProvider};
+use crate::directory_state::DirectoryStateProvider;
 
 use self::command_executor_cor::{CreateNvimCommandExecutorCor, DirectoryCor, FileCor};
 
+pub struct RunContainerArg {
+    pub image: String,
+    pub volume: Vec<(PathBuf, PathBuf)>,
+    pub host_path: Option<PathBuf>,
+}
+
 pub fn run_container(
-    args: Args<PathBuf>,
+    args: RunContainerArg,
     dir_state_provider: impl DirectoryStateProvider,
     container_name: &str,
 ) -> Result<()> {

@@ -46,6 +46,7 @@ where
     }
 }
 
+#[derive(Clone)]
 pub struct VolumeArg {
     host_path: PathBuf,
     container_path: PathBuf,
