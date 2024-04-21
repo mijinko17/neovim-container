@@ -2,6 +2,7 @@ mod action;
 mod cli;
 mod clipboard;
 mod command_executor;
+mod config_reader;
 mod constants;
 mod container_config;
 mod container_runner;
@@ -11,18 +12,21 @@ mod telekasten;
 mod terminal_command;
 mod update_binary;
 
-use std::{collections::HashMap, path::Path};
+use std::collections::HashMap;
 
 use action::{pull_image, run_container, update_binary};
 use anyhow::Result;
 use clap::Parser;
 use constants::UID;
 use container_config::{image_name, ContainerImageConfig};
-use directory_state::{DirectoryStateProvider, DirectoryStateProviderImpl};
+use directory_state::DirectoryStateProviderImpl;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
-use crate::cli::{Args, RawArgs};
+use crate::{
+    cli::{Args, RawArgs},
+    config_reader::{ConfigReader, ConfigReaderImpl},
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Service {
@@ -36,9 +40,9 @@ struct Compose {
 }
 
 fn main() -> Result<()> {
-    let compose_yaml = DirectoryStateProviderImpl.file_content(&Path::new("compose.yml"))?;
-    let deserialized: Compose = serde_yaml::from_str(&compose_yaml)?;
-    println!("{:?}", deserialized);
+    let config = ConfigReaderImpl::new(DirectoryStateProviderImpl).config("default".to_string())?;
+    println!("{}", config.image);
+    println!("{:?}", config.volumes);
     let args = Args::from(RawArgs::parse());
     if args.update {
         update_binary()
