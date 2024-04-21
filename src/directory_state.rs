@@ -84,9 +84,9 @@ impl DirectoryStateProviderMock {
         }
     }
 
-    pub fn with_file_content(mut self, path: impl AsRef<Path>, content: String) -> Self {
+    pub fn with_file_content(mut self, path: impl AsRef<Path>, content: &str) -> Self {
         self.file_content_map
-            .insert(path.as_ref().to_path_buf(), content);
+            .insert(path.as_ref().to_path_buf(), content.to_string());
         self
     }
 }

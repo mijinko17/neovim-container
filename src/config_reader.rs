@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::directory_state::DirectoryStateProvider;
 
 pub trait ConfigReader {
-    fn config(&self, service_name: String) -> anyhow::Result<ContainerService>;
+    fn config(&self, service_name: &str) -> anyhow::Result<ContainerService>;
 }
 
 pub struct ConfigReaderImpl<T: DirectoryStateProvider> {
@@ -23,7 +23,7 @@ impl<T: DirectoryStateProvider> ConfigReaderImpl<T> {
 }
 
 impl<T: DirectoryStateProvider> ConfigReader for ConfigReaderImpl<T> {
-    fn config(&self, service_name: String) -> anyhow::Result<ContainerService> {
+    fn config(&self, service_name: &str) -> anyhow::Result<ContainerService> {
         let compose_yaml = self.dir_state.file_content(
             &self
                 .dir_state
@@ -32,7 +32,7 @@ impl<T: DirectoryStateProvider> ConfigReader for ConfigReaderImpl<T> {
         )?;
         serde_yaml::from_str::<RawNeovimContainerConfig>(&compose_yaml)?
             .services
-            .remove(&service_name)
+            .remove(service_name)
             .unwrap()
             .try_into()
     }
@@ -111,10 +111,10 @@ mod tests {
             .with_config_dir(Path::new("/home/neovim/.config"))
             .with_file_content(
                 Path::new("/home/neovim/.config/neovim-container/neovim-container.yml"),
-                yaml.to_string(),
+                yaml,
             );
         let config_reader = ConfigReaderImpl { dir_state };
-        let config = config_reader.config("default".to_string())?;
+        let config = config_reader.config("default")?;
         assert_eq!(config.image, "mijinko17/neovim-container");
         assert_eq!(
             config.volumes,

@@ -40,7 +40,7 @@ struct Compose {
 }
 
 fn main() -> Result<()> {
-    let config = ConfigReaderImpl::new(DirectoryStateProviderImpl).config("default".to_string())?;
+    let config = ConfigReaderImpl::new(DirectoryStateProviderImpl).config("default")?;
     println!("{}", config.image);
     println!("{:?}", config.volumes);
     let args = Args::from(RawArgs::parse());
