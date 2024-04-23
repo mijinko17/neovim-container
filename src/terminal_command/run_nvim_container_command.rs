@@ -1,10 +1,11 @@
 use std::{
-    ffi::OsStr,
     path::{Path, PathBuf},
     process::Command,
 };
 
 use anyhow::Result;
+
+use super::OptionalArg;
 
 pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
     pub image: String,
@@ -68,18 +69,5 @@ impl VolumeArg {
                 self.container_path.to_str().unwrap()
             ),
         ]
-    }
-}
-
-pub trait OptionalArg {
-    fn optional_arg<S: AsRef<OsStr>>(&mut self, optional_arg: Option<S>) -> &mut Self;
-}
-
-impl OptionalArg for Command {
-    fn optional_arg<S: AsRef<OsStr>>(&mut self, optional_arg: Option<S>) -> &mut Self {
-        match optional_arg {
-            Some(value) => self.arg(value),
-            None => self,
-        }
     }
 }

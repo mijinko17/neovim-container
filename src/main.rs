@@ -1,7 +1,6 @@
 mod action;
 mod cli;
 mod clipboard;
-mod command_executor;
 mod config_reader;
 mod constants;
 mod container_config;
