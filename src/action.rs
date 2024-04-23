@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::clipboard::clean_named_pipe;
 
-use crate::config_reader::{ConfigReader, ConfigReaderImpl};
+use crate::config_reader::ConfigReader;
 use crate::container_runner::RunContainerArg;
 use crate::{
     cli::Args, clipboard::setup_clipboard, directory_state::DirectoryStateProviderImpl,
@@ -20,22 +20,20 @@ pub fn update_binary() -> Result<()> {
     crate::update_binary::update_binary()
 }
 
-pub fn run_container(args: Args<PathBuf>) -> Result<()> {
+pub fn run_container(args: Args<PathBuf>, config_reader: impl ConfigReader) -> Result<()> {
     let _ = setup_for_telekasten(&DirectoryStateProviderImpl);
     let container_name = random_contaniner_name();
-    let config = ConfigReaderImpl::new(DirectoryStateProviderImpl).config("default")?;
+    let config = config_reader.config("default")?;
     let run_container_arg = RunContainerArg {
         image: config.image,
         volume: config.volumes,
         host_path: args.path,
+        container_name: container_name.clone(),
     };
-    let result = setup_clipboard(&DirectoryStateProviderImpl, &container_name).and_then(|_| {
-        crate::container_runner::run_container(
-            run_container_arg,
-            DirectoryStateProviderImpl,
-            &container_name,
-        )
-    });
+    let result =
+        setup_clipboard(&DirectoryStateProviderImpl, container_name.as_str()).and_then(|_| {
+            crate::container_runner::run_container(run_container_arg, DirectoryStateProviderImpl)
+        });
     let _ = clean_named_pipe(&DirectoryStateProviderImpl, &container_name);
     result
 }

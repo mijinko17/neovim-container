@@ -18,12 +18,11 @@ pub trait CreateNvimCommandExecutorCor {
     fn create(&self, args: RunContainerArg) -> Result<NvimCommandExecutor<PathBuf, PathBuf>>;
 }
 
-pub struct DirectoryCor<'a, 'b, T: DirectoryStateProvider> {
+pub struct DirectoryCor<'a, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
-    pub container_name: &'b str,
 }
 
-impl<'a, 'b, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, 'b, T>
+impl<'a, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
@@ -35,7 +34,7 @@ where
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
             image: args.image,
-            container_name: self.container_name.to_string(),
+            container_name: args.container_name.clone(),
             volumes: [
                 args.volume
                     .into_iter()
@@ -51,14 +50,14 @@ where
                     VolumeArg::new(
                         clipboard_named_pipe_from_host_path(
                             self.dir_state_provider,
-                            self.container_name,
+                            &args.container_name,
                         )?,
                         Path::new("/home/neovim/pipes/clipboard"),
                     ),
                     VolumeArg::new(
                         clipboard_named_pipe_from_container_path(
                             self.dir_state_provider,
-                            self.container_name,
+                            &args.container_name,
                         )?,
                         Path::new("/home/neovim/pipes/from_container"),
                     ),
@@ -71,12 +70,11 @@ where
     }
 }
 
-pub struct FileCor<'a, 'b, T: DirectoryStateProvider> {
+pub struct FileCor<'a, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
-    pub container_name: &'b str,
 }
 
-impl<'a, 'b, T> CreateNvimCommandExecutorCor for FileCor<'a, 'b, T>
+impl<'a, T> CreateNvimCommandExecutorCor for FileCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
@@ -96,7 +94,7 @@ where
         let work_dir = Path::new("/home/host").to_path_buf();
         Ok(NvimCommandExecutor {
             image: args.image,
-            container_name: self.container_name.to_string(),
+            container_name: args.container_name.clone(),
             volumes: [
                 args.volume
                     .into_iter()
@@ -107,14 +105,14 @@ where
                     VolumeArg::new(
                         clipboard_named_pipe_from_host_path(
                             self.dir_state_provider,
-                            self.container_name,
+                            &args.container_name,
                         )?,
                         Path::new("/home/neovim/pipes/clipboard"),
                     ),
                     VolumeArg::new(
                         clipboard_named_pipe_from_container_path(
                             self.dir_state_provider,
-                            self.container_name,
+                            &args.container_name,
                         )?,
                         Path::new("/home/neovim/pipes/from_container"),
                     ),

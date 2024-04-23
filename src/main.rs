@@ -17,8 +17,10 @@ use std::collections::HashMap;
 use action::{pull_image, run_container, update_binary};
 use anyhow::Result;
 use clap::Parser;
+use config_reader::ConfigReaderImpl;
 use constants::UID;
 use container_config::{image_name, ContainerImageConfig};
+use directory_state::DirectoryStateProviderImpl;
 use rand::random;
 use serde::{Deserialize, Serialize};
 
@@ -42,7 +44,7 @@ fn main() -> Result<()> {
     } else if args.pull {
         pull_image(image_name(ContainerImageConfig { uid: UID }))
     } else {
-        run_container(args)
+        run_container(args, ConfigReaderImpl::new(DirectoryStateProviderImpl))
     }
 }
 
