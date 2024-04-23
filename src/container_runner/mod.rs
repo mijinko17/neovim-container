@@ -1,14 +1,14 @@
-mod command_executor_cor;
+mod create_command_cor;
 
 use std::path::PathBuf;
 
 use anyhow::{bail, Result};
 
-use crate::directory_state::DirectoryStateProvider;
+use crate::interface::directory_state::DirectoryStateProvider;
 
-use self::command_executor_cor::{CreateNvimCommandExecutorCor, DirectoryCor, FileCor};
+use self::create_command_cor::{CreateNvimCommandCor, DirectoryCor, FileCor};
 
-pub struct RunContainerArg {
+pub struct RunNvimContainerArg {
     pub image: String,
     pub volume: Vec<(PathBuf, PathBuf)>,
     pub host_path: Option<PathBuf>,
@@ -16,10 +16,10 @@ pub struct RunContainerArg {
 }
 
 pub fn run_container(
-    args: RunContainerArg,
+    args: RunNvimContainerArg,
     dir_state_provider: impl DirectoryStateProvider,
 ) -> Result<()> {
-    let cors: Vec<Box<dyn CreateNvimCommandExecutorCor>> = vec![
+    let cors: Vec<Box<dyn CreateNvimCommandCor>> = vec![
         Box::new(DirectoryCor {
             dir_state_provider: &dir_state_provider,
         }),

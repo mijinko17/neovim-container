@@ -7,31 +7,37 @@ use crate::{
         from_container::clipboard_named_pipe_from_container_path,
         from_host::clipboard_named_pipe_from_host_path,
     },
-    directory_state::DirectoryStateProvider, terminal_command::run_nvim_container_command::{NvimCommandExecutor, VolumeArg},
+    interface::{directory_state::DirectoryStateProvider, terminal_command::run_nvim_container_command::{RunNvimContainerCommand, VolumeArg}},
 };
 
-use super::RunContainerArg;
+use super::RunNvimContainerArg;
 
-pub trait CreateNvimCommandExecutorCor {
-    fn is_responsible(&self, args: &RunContainerArg) -> bool;
-    fn create(&self, args: RunContainerArg) -> Result<NvimCommandExecutor<PathBuf, PathBuf>>;
+pub trait CreateNvimCommandCor {
+    fn is_responsible(&self, args: &RunNvimContainerArg) -> bool;
+    fn create(
+        &self,
+        args: RunNvimContainerArg,
+    ) -> Result<RunNvimContainerCommand<PathBuf, PathBuf>>;
 }
 
 pub struct DirectoryCor<'a, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
 }
 
-impl<'a, T> CreateNvimCommandExecutorCor for DirectoryCor<'a, T>
+impl<'a, T> CreateNvimCommandCor for DirectoryCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
-    fn is_responsible(&self, args: &RunContainerArg) -> bool {
+    fn is_responsible(&self, args: &RunNvimContainerArg) -> bool {
         args.host_path.is_none()
     }
-    fn create(&self, args: RunContainerArg) -> Result<NvimCommandExecutor<PathBuf, PathBuf>> {
+    fn create(
+        &self,
+        args: RunNvimContainerArg,
+    ) -> Result<RunNvimContainerCommand<PathBuf, PathBuf>> {
         let current_dir = self.dir_state_provider.current_dir()?;
         let work_dir = Path::new("/home/host").to_path_buf();
-        Ok(NvimCommandExecutor {
+        Ok(RunNvimContainerCommand {
             image: args.image,
             container_name: args.container_name.clone(),
             volumes: [
@@ -73,14 +79,17 @@ pub struct FileCor<'a, T: DirectoryStateProvider> {
     pub dir_state_provider: &'a T,
 }
 
-impl<'a, T> CreateNvimCommandExecutorCor for FileCor<'a, T>
+impl<'a, T> CreateNvimCommandCor for FileCor<'a, T>
 where
     T: DirectoryStateProvider,
 {
-    fn is_responsible(&self, args: &RunContainerArg) -> bool {
+    fn is_responsible(&self, args: &RunNvimContainerArg) -> bool {
         args.host_path.is_some()
     }
-    fn create(&self, args: RunContainerArg) -> Result<NvimCommandExecutor<PathBuf, PathBuf>> {
+    fn create(
+        &self,
+        args: RunNvimContainerArg,
+    ) -> Result<RunNvimContainerCommand<PathBuf, PathBuf>> {
         let target = self.dir_state_provider.absolute_path(
             &args
                 .host_path
@@ -91,7 +100,7 @@ where
             Path::new("/home/host").join(target.file_name().context("Failed to get file name.")?),
         );
         let work_dir = Path::new("/home/host").to_path_buf();
-        Ok(NvimCommandExecutor {
+        Ok(RunNvimContainerCommand {
             image: args.image,
             container_name: args.container_name.clone(),
             volumes: [

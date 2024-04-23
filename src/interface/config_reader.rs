@@ -6,7 +6,7 @@ use std::{
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
-use crate::directory_state::DirectoryStateProvider;
+use super::directory_state::DirectoryStateProvider;
 
 pub trait ConfigReader {
     fn config(&self, service_name: &str) -> anyhow::Result<ContainerService>;
@@ -92,7 +92,7 @@ struct RawNeovimContainerConfig {
 mod tests {
     use std::path::Path;
 
-    use crate::directory_state::DirectoryStateProviderMock;
+    use crate::interface::directory_state::DirectoryStateProviderMock;
 
     use super::{ConfigReader, ConfigReaderImpl};
 

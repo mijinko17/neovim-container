@@ -2,11 +2,11 @@ use std::process::{Command, Stdio};
 
 use anyhow::Result;
 
-pub struct SetHostClipboardCommandExecutor {
+pub struct SetWindowsClipboardCommand {
     content: String,
 }
 
-impl SetHostClipboardCommandExecutor {
+impl SetWindowsClipboardCommand {
     pub fn new(content: String) -> Self {
         Self { content }
     }

@@ -3,8 +3,11 @@ use std::path::PathBuf;
 use anyhow::Result;
 
 use crate::{
-    clipboard::clipboard_named_pipe_dir_path, directory_state::DirectoryStateProvider,
-    terminal_command::set_host_clipboard_command_executor::SetHostClipboardCommandExecutor,
+    clipboard::clipboard_named_pipe_dir_path,
+    interface::{
+        directory_state::DirectoryStateProvider,
+        terminal_command::set_win_clipboard_command::SetWindowsClipboardCommand,
+    },
 };
 
 pub fn setup_clipboard_from_container(
@@ -48,5 +51,5 @@ pub fn clipboard_named_pipe_from_container_path(
 }
 
 fn set_clipboard(content: String) -> Result<()> {
-    SetHostClipboardCommandExecutor::new(content).execute()
+    SetWindowsClipboardCommand::new(content).execute()
 }

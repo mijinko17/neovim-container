@@ -2,9 +2,9 @@ use std::process::Command;
 
 use anyhow::Result;
 
-pub struct GetWindowsClipboardCommandExecutor;
+pub struct GetWindowsClipboardCommand;
 
-impl GetWindowsClipboardCommandExecutor {
+impl GetWindowsClipboardCommand {
     pub fn execute(&self) -> Result<String> {
         let powershell = Command::new("powershell.exe")
             .arg("-command")

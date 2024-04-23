@@ -7,7 +7,7 @@ use anyhow::Result;
 
 use super::OptionalArg;
 
-pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
+pub struct RunNvimContainerCommand<T: AsRef<Path>, U: AsRef<Path>> {
     pub image: String,
     pub container_name: String,
     pub volumes: Vec<VolumeArg>,
@@ -15,7 +15,7 @@ pub struct NvimCommandExecutor<T: AsRef<Path>, U: AsRef<Path>> {
     pub target_file_path: Option<U>,
 }
 
-impl<T, U> NvimCommandExecutor<T, U>
+impl<T, U> RunNvimContainerCommand<T, U>
 where
     T: AsRef<Path>,
     U: AsRef<Path>,

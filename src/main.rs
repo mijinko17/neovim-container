@@ -1,14 +1,12 @@
 mod action;
 mod cli;
 mod clipboard;
-mod config_reader;
 mod constants;
 mod container_config;
 mod container_runner;
-mod directory_state;
+mod interface;
 mod path;
 mod telekasten;
-mod terminal_command;
 mod update_binary;
 
 use std::collections::HashMap;
@@ -16,10 +14,9 @@ use std::collections::HashMap;
 use action::{pull_image, run_container, update_binary};
 use anyhow::Result;
 use clap::Parser;
-use config_reader::ConfigReaderImpl;
 use constants::UID;
 use container_config::{image_name, ContainerImageConfig};
-use directory_state::DirectoryStateProviderImpl;
+use interface::{config_reader::ConfigReaderImpl, directory_state::DirectoryStateProviderImpl};
 use rand::random;
 use serde::{Deserialize, Serialize};
 

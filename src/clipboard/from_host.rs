@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::{
-    directory_state::DirectoryStateProvider,
-    terminal_command::get_clipboard_win::GetWindowsClipboardCommandExecutor,
-};
+use crate::interface::{directory_state::DirectoryStateProvider, terminal_command::get_win_clipboard_command::GetWindowsClipboardCommand};
 
 use super::clipboard_named_pipe_dir_path;
 
@@ -47,9 +44,6 @@ pub fn clipboard_named_pipe_from_host_path(
 }
 
 fn clipboard_content() -> Result<Vec<u8>> {
-    let a = GetWindowsClipboardCommandExecutor
-        .execute()?
-        .as_bytes()
-        .to_vec();
+    let a = GetWindowsClipboardCommand.execute()?.as_bytes().to_vec();
     Ok(a)
 }
