@@ -17,6 +17,7 @@ anyhow = "1.0.82"
 rand = { version = "0.8.5", features = ["std_rng"] }
 serde = { version ="1.0.198", features = ["derive"] }
 serde_yaml = "0.9.34"
+home-dir = "0.1.0"
 
 [features]
 default = []

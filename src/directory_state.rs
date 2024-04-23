@@ -7,6 +7,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use dirs::home_dir;
+use home_dir::HomeDirExt;
 use nix::{sys::stat, unistd};
 
 pub trait DirectoryStateProvider: Sync {
@@ -19,6 +20,7 @@ pub trait DirectoryStateProvider: Sync {
     fn write_file(&self, path: &impl AsRef<Path>, content: &[u8]) -> Result<()>;
     fn remove_file(&self, path: &impl AsRef<Path>) -> Result<()>;
     fn config_dir(&self) -> Result<PathBuf>;
+    fn expand_home_dir(&self, path: &impl AsRef<Path>) -> Result<PathBuf>;
 }
 
 pub struct DirectoryStateProviderImpl;
@@ -62,6 +64,10 @@ impl DirectoryStateProvider for DirectoryStateProviderImpl {
             .map(|a| Path::new(&a).to_path_buf())
             .or_else(|| home_dir().map(|h| h.join(".config")))
             .context("Unable to get config directory.")
+    }
+
+    fn expand_home_dir(&self, path: &impl AsRef<Path>) -> Result<PathBuf> {
+        Ok(path.as_ref().expand_home()?)
     }
 }
 
@@ -132,5 +138,8 @@ impl DirectoryStateProvider for DirectoryStateProviderMock {
         self.config_dir
             .clone()
             .context("Config Directory is not defined.")
+    }
+    fn expand_home_dir(&self, _path: &impl AsRef<Path>) -> Result<PathBuf> {
+        todo!()
     }
 }
