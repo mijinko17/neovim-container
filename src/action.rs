@@ -8,10 +8,8 @@ use crate::container_runner::RunNvimContainerArg;
 use crate::interface::config_reader::ConfigReader;
 use crate::interface::directory_state::DirectoryStateProviderImpl;
 use crate::interface::terminal_command::pull_image_command::PullImageComand;
-use crate::{
-    cli::Args, clipboard::setup_clipboard,
-    random_contaniner_name, telekasten::setup_for_telekasten,
-};
+use crate::interface::terminal_command::run_from_string_command::RunFromStringCommand;
+use crate::{cli::Args, clipboard::setup_clipboard, random_contaniner_name};
 
 pub fn pull_image(image: String) -> Result<()> {
     PullImageComand::new(image).execute()
@@ -22,9 +20,11 @@ pub fn update_binary() -> Result<()> {
 }
 
 pub fn run_container(args: Args<PathBuf>, config_reader: impl ConfigReader) -> Result<()> {
-    let _ = setup_for_telekasten(&DirectoryStateProviderImpl);
     let container_name = random_contaniner_name();
     let config = config_reader.config("default")?;
+    if let Some(command) = config.before_command {
+        let _ = RunFromStringCommand::new(command).execute();
+    }
     let run_container_arg = RunNvimContainerArg {
         image: config.image,
         volume: config.volumes,

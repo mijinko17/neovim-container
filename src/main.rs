@@ -6,7 +6,6 @@ mod container_config;
 mod container_runner;
 mod interface;
 mod path;
-mod telekasten;
 mod update_binary;
 
 use std::collections::HashMap;

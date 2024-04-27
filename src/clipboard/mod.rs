@@ -5,7 +5,6 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-
 use crate::interface::directory_state::DirectoryStateProvider;
 
 use self::{

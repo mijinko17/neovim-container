@@ -41,6 +41,7 @@ impl<T: DirectoryStateProvider> ConfigReader for ConfigReaderImpl<T> {
 pub struct ContainerService {
     pub image: String,
     pub volumes: Vec<(PathBuf, PathBuf)>,
+    pub before_command: Option<String>,
 }
 
 impl TryFrom<RawService> for ContainerService {
@@ -57,6 +58,7 @@ impl TryFrom<RawService> for ContainerService {
                         .collect::<anyhow::Result<Vec<_>>>()
                 })
                 .unwrap_or(Ok(vec![]))?,
+            before_command: value.before,
         })
     }
 }
@@ -81,6 +83,7 @@ fn split(volume: String) -> anyhow::Result<(PathBuf, PathBuf)> {
 struct RawService {
     image: String,
     volumes: Option<Vec<String>>,
+    before: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

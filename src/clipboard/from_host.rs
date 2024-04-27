@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use crate::interface::{directory_state::DirectoryStateProvider, terminal_command::get_win_clipboard_command::GetWindowsClipboardCommand};
+use crate::interface::{
+    directory_state::DirectoryStateProvider,
+    terminal_command::get_win_clipboard_command::GetWindowsClipboardCommand,
+};
 
 use super::clipboard_named_pipe_dir_path;
 

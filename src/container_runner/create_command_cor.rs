@@ -7,7 +7,10 @@ use crate::{
         from_container::clipboard_named_pipe_from_container_path,
         from_host::clipboard_named_pipe_from_host_path,
     },
-    interface::{directory_state::DirectoryStateProvider, terminal_command::run_nvim_container_command::{RunNvimContainerCommand, VolumeArg}},
+    interface::{
+        directory_state::DirectoryStateProvider,
+        terminal_command::run_nvim_container_command::{RunNvimContainerCommand, VolumeArg},
+    },
 };
 
 use super::RunNvimContainerArg;
