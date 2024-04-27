@@ -11,7 +11,8 @@ use crate::interface::terminal_command::pull_image_command::PullImageComand;
 use crate::interface::terminal_command::run_from_string_command::RunFromStringCommand;
 use crate::{cli::Args, clipboard::setup_clipboard, random_contaniner_name};
 
-pub fn pull_image(image: String) -> Result<()> {
+pub fn pull_image(service: &str, config_reader: impl ConfigReader) -> Result<()> {
+    let image = config_reader.config(service)?.image;
     PullImageComand::new(image).execute()
 }
 

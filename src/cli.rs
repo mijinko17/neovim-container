@@ -2,6 +2,8 @@ use std::path::{Path, PathBuf};
 
 use clap::Parser;
 
+use crate::constants::DEFAULT_SERVICE;
+
 /// Run neovim inside docker container
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -15,7 +17,7 @@ pub struct RawArgs {
     #[arg(short, long)]
     pull: bool,
     /// Service you want to start. You can describe service in config file.
-    #[arg(short, long, default_value = "default")]
+    #[arg(short, long, default_value = DEFAULT_SERVICE)]
     service: String,
 }
 

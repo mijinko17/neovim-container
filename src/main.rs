@@ -2,7 +2,6 @@ mod action;
 mod cli;
 mod clipboard;
 mod constants;
-mod container_config;
 mod container_runner;
 mod interface;
 mod path;
@@ -13,8 +12,6 @@ use std::collections::HashMap;
 use action::{pull_image, run_container, update_binary};
 use anyhow::Result;
 use clap::Parser;
-use constants::UID;
-use container_config::{image_name, ContainerImageConfig};
 use interface::{config_reader::ConfigReaderImpl, directory_state::DirectoryStateProviderImpl};
 use rand::random;
 use serde::{Deserialize, Serialize};
@@ -37,7 +34,10 @@ fn main() -> Result<()> {
     if args.update {
         update_binary()
     } else if args.pull {
-        pull_image(image_name(ContainerImageConfig { uid: UID }))
+        pull_image(
+            &args.service,
+            ConfigReaderImpl::new(DirectoryStateProviderImpl),
+        )
     } else {
         run_container(args, ConfigReaderImpl::new(DirectoryStateProviderImpl))
     }
