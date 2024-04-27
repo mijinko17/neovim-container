@@ -52,3 +52,14 @@ args = ["test"]
 description = "ci"
 category = "develop"
 dependencies = ["format_check", "lint", "test"]
+
+[tasks.release]
+category = "develop"
+description = "Create tag and push (then automatically build binary and release at origin)."
+script = [
+    '''
+    version=v$(cargo pkgid | cut -d "#" -f2)
+    git tag $version
+    git push origin $version
+    ''',
+]
