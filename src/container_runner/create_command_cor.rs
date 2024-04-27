@@ -109,8 +109,13 @@ where
             volumes: [
                 args.volume
                     .into_iter()
-                    .map(|(host_path, container_path)| VolumeArg::new(host_path, container_path))
-                    .collect(),
+                    .map(|(host_path, container_path)| {
+                        Ok(VolumeArg::new(
+                            self.dir_state_provider.expand_home_dir(&host_path)?,
+                            self.dir_state_provider.expand_home_dir(&container_path)?,
+                        ))
+                    })
+                    .collect::<Result<Vec<_>>>()?,
                 vec![
                     VolumeArg::new(parent_dir, Path::new("/home/host")),
                     VolumeArg::new(
