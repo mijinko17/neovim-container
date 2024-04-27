@@ -14,6 +14,9 @@ pub struct RawArgs {
     /// Pull image.
     #[arg(short, long)]
     pull: bool,
+    /// Service you want to start. You can describe service in config file.
+    #[arg(short, long, default_value = "default")]
+    service: String,
 }
 
 #[derive(Clone)]
@@ -21,6 +24,7 @@ pub struct Args<T: AsRef<Path>> {
     pub path: Option<T>,
     pub update: bool,
     pub pull: bool,
+    pub service: String,
 }
 
 impl From<RawArgs> for Args<PathBuf> {
@@ -29,6 +33,7 @@ impl From<RawArgs> for Args<PathBuf> {
             path: value.path.map(|p| Path::new(p.as_str()).to_path_buf()),
             update: value.update,
             pull: value.pull,
+            service: value.service,
         }
     }
 }

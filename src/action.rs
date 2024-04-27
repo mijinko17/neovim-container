@@ -21,7 +21,7 @@ pub fn update_binary() -> Result<()> {
 
 pub fn run_container(args: Args<PathBuf>, config_reader: impl ConfigReader) -> Result<()> {
     let container_name = random_contaniner_name();
-    let config = config_reader.config("default")?;
+    let config = config_reader.config(&args.service)?;
     if let Some(command) = config.before_command {
         let _ = RunFromStringCommand::new(command).execute();
     }
