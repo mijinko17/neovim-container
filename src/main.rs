@@ -7,27 +7,13 @@ mod interface;
 mod path;
 mod update_binary;
 
-use std::collections::HashMap;
-
 use action::{pull_image, run_container, update_binary};
 use anyhow::Result;
 use clap::Parser;
 use interface::{config_reader::ConfigReaderImpl, directory_state::DirectoryStateProviderImpl};
 use rand::random;
-use serde::{Deserialize, Serialize};
 
 use crate::cli::{Args, RawArgs};
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Service {
-    image: String,
-    volumes: Option<Vec<String>>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Compose {
-    services: HashMap<String, Service>,
-}
 
 fn main() -> Result<()> {
     let args = Args::from(RawArgs::parse());
